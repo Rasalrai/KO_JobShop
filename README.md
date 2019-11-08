@@ -1,1 +1,2 @@
-# KO_JobShop
+# Job Shop
+## Przedmiot: Optymalizacja Kombinatoryczna
