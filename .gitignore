@@ -1,8 +1,9 @@
-wynik.txt
+wynik*
 jobshop/Debug/*
 jobshop/.vs/*
 .*
 !.gitignore
+*.txt
 
 # Prerequisites
 *.d
