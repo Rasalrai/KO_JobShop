@@ -137,23 +137,6 @@ void read_t(std::string filename, int* machinesCount, int* jobsCount)
 
 void write_to_file(std::string filename, int* machinesCount, int* jobsCount)
 {
-    /*std::cout << "machines count " << (*machinesCount) << '\n' << "jobs count " << (*jobsCount) << '\n';
-    for(int i=0;i<(*jobsCount);++i)
-    {
-        for(int j=0;j<(*machinesCount);++j)
-            std::cout << maszyny[i][j] << "\t";
-        std::cout<<'\n';
-    }
-    std::cout << '\n';
-    for(int i=0;i<(*jobsCount);++i)
-    {
-        for(int j=0;j<(*machinesCount);++j)
-            std::cout << czasy[i][j] << "\t";
-        std::cout<<'\n';
-    }*/
-
-
-    
 	std::ofstream zapis;
 	zapis.open(filename, std::ios::out);
 
@@ -190,5 +173,4 @@ void write_to_file(std::string filename, int* machinesCount, int* jobsCount)
 
         zapis.close();
     }
-    
 }
