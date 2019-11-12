@@ -4,9 +4,12 @@
 #include <fstream>
 #include <string>
 
-void read_t(std::string filename, int** maszyny,  int** czasy, int* machinesCount, int* jobsCount);
-void read_b(std::string filename, int** maszyny,  int** czasy, int* machinesCount, int* jobsCount);
-void write_to_file(std::string filename, int** maszyny,  int** czasy, int* machinesCount, int* jobsCount);
+void read_t(std::string filename, int* machinesCount, int* jobsCount);
+void read_b(std::string filename, int* machinesCount, int* jobsCount);
+void write_to_file(std::string filename, int* machinesCount, int* jobsCount);
+
+int** maszyny;
+int** czasy;
 
 // TODO: add argument to limit number of instances to solve from file
 /*
@@ -22,22 +25,21 @@ int main(int argc, char *argv[])
 	std::string inFileName = argv[1];
 	std::string fileType = argv[2];
 
-	int** maszyny;
-	int** czasy;
+	
 	int machinesCount, jobsCount;
 
 	std::cout << "filename: " << inFileName << ", type: " << fileType << '\n';
 
 	if (fileType[0] == 't')
 	{
-	    read_t(inFileName, maszyny, czasy, &machinesCount, &jobsCount);
-	    write_to_file("wynik_t.txt", maszyny, czasy, &machinesCount, &jobsCount);
+	    read_t(inFileName, &machinesCount, &jobsCount);
+	    write_to_file("wynik_t.txt", &machinesCount, &jobsCount);
 	}
 
 	else if (fileType[0] == 'b')
 	{
-		read_b(inFileName, maszyny, czasy, &machinesCount, &jobsCount);
-        // write_to_file("wynik_b.txt", maszyny, czasy, &machinesCount, &jobsCount);
+		read_b(inFileName, &machinesCount, &jobsCount);
+        write_to_file("wynik_b.txt", &machinesCount, &jobsCount);
 	}
 	else
 	    std::cout << "blad\n";
@@ -45,7 +47,7 @@ int main(int argc, char *argv[])
 	return 0;
 }
 
-void read_b(std::string filename, int** maszyny,  int** czasy, int* machinesCount, int* jobsCount)
+void read_b(std::string filename, int* machinesCount, int* jobsCount)
 {
 	std::ifstream odczyt;
 	std::string line;
@@ -80,7 +82,7 @@ void read_b(std::string filename, int** maszyny,  int** czasy, int* machinesCoun
 
 }
 
-void read_t(std::string filename, int** maszyny,  int** czasy, int* machinesCount, int* jobsCount)
+void read_t(std::string filename, int* machinesCount, int* jobsCount)
 {
 	std::ifstream odczyt;
 	std::string line;
@@ -117,6 +119,7 @@ void read_t(std::string filename, int** maszyny,  int** czasy, int* machinesCoun
 		// std::getline(odczyt, line);
 		// std::cout << line<<"\n\n";
 		// read machines
+		std::cout << '\n';
 		int x;
 		for (int i = 0; i < (*jobsCount); ++i)
 		 {
@@ -126,15 +129,15 @@ void read_t(std::string filename, int** maszyny,  int** czasy, int* machinesCoun
 				maszyny[i][j] = x;
 				std::cout << maszyny[i][j] << "\t";
 			}
-			std::cout << '\n';
+			// std::cout << '\n';
 		}
 		odczyt.close();
 	}
 }
 
-void write_to_file(std::string filename, int** maszyny,  int** czasy, int* machinesCount, int* jobsCount)
+void write_to_file(std::string filename, int* machinesCount, int* jobsCount)
 {
-    std::cout << "machines count " << (*machinesCount) << '\n' << "jobs count " << (*jobsCount) << '\n';
+    /*std::cout << "machines count " << (*machinesCount) << '\n' << "jobs count " << (*jobsCount) << '\n';
     for(int i=0;i<(*jobsCount);++i)
     {
         for(int j=0;j<(*machinesCount);++j)
@@ -147,17 +150,17 @@ void write_to_file(std::string filename, int** maszyny,  int** czasy, int* machi
         for(int j=0;j<(*machinesCount);++j)
             std::cout << czasy[i][j] << "\t";
         std::cout<<'\n';
-    }
+    }*/
 
 
-    /*
+    
 	std::ofstream zapis;
 	zapis.open(filename, std::ios::out);
 
 	if (zapis.good())
 	{
 	    std::cout << "machines count " << (*machinesCount) << '\n' << "jobs count " << (*jobsCount) << '\n';
-        // zapis << "machines count " << (*machinesCount) << '\n' << "jobs count " << (*jobsCount) << '\n';
+        zapis << "machines count " << (*machinesCount) << '\n' << "jobs count " << (*jobsCount) << '\n';
         std::cout << "Maszyny:\n";
         std::cout << "1";
         for (int i = 0; i < (*jobsCount); ++i)
@@ -187,5 +190,5 @@ void write_to_file(std::string filename, int** maszyny,  int** czasy, int* machi
 
         zapis.close();
     }
-    */
+    
 }
