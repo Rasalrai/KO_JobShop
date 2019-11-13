@@ -17,7 +17,7 @@ void job_shop(int machines_c, int jobs_c, int**& proc_order, int**& proc_times, 
 
 	// store times of start and end of assigned jobs
 	std::vector<std::vector<int>> machines_usage(machines_c);
-	for (int i = 0; i < jobs_c; ++i)
+	for (int i = 0; i < machines_c; ++i)
 		machines_usage[i].reserve(jobs_c * 2);
 
 
