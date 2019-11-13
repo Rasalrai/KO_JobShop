@@ -16,9 +16,9 @@ void job_shop(int machines_c, int jobs_c, int**& proc_order, int**& proc_times, 
 	for (int i = 0; i < jobs_c; ++i) start_times[i] = new int[machines_c];
 
 	// store times of start and end of assigned jobs
-	std::vector<std::vector<int>> machines_usage(jobs_c);
+	std::vector<std::vector<int>> machines_usage(machines_c);
 	for (int i = 0; i < jobs_c; ++i)
-		machines_usage[i].reserve(machines_c * 2);
+		machines_usage[i].reserve(jobs_c * 2);
 
 
 	while (!check_time(start_stamp, time_limit))
