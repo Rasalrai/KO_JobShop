@@ -3,9 +3,9 @@
 #include <cstdio>
 #include <fstream>
 #include <string>
-#include "constants.h"
+#include "input_output.h"
 
-void read_b(std::string filename)
+void read_b(std::string filename, int* machines_c, int* jobs_c, int**& machines, int**& jobs, int max_jobs)
 {
 	std::ifstream odczyt;
 	std::string line;
@@ -15,31 +15,30 @@ void read_b(std::string filename)
 	{
 	    std::cout << "Udalo sie otworzyc" << '\n';
 
-		odczyt >> JOBS_COUNT >> MACHINES_COUNT;
+		odczyt >> *jobs_c >> *machines_c;
+		if (max_jobs) *jobs_c = max_jobs;
 		// std::getline(odczyt, line);
 		// std::getline(odczyt, line);
 
-		MACHINES_ORDER = new int*[JOBS_COUNT];
-		JOB_DUR_TIMES = new int*[JOBS_COUNT];
-		for (int i = 0; i < JOBS_COUNT; ++i)
+		machines = new int*[*jobs_c];
+		jobs = new int*[*jobs_c];
+		for (int i = 0; i < *jobs_c; ++i)
 		{
-			MACHINES_ORDER[i] = new int[MACHINES_COUNT];
-			JOB_DUR_TIMES[i] = new int[MACHINES_COUNT];
+			machines[i] = new int[*machines_c];
+			jobs[i] = new int[*machines_c];
 		}
 	}
 
-    for (int i = 0; i < JOBS_COUNT; ++i)
+    for (int i = 0; i < *jobs_c; ++i)
     {
-        for (int j = 0; j < 2 * MACHINES_COUNT; j+=2) {
-            odczyt >> MACHINES_ORDER[i][j/2] >> JOB_DUR_TIMES[i][j/2];
-            std::cout << MACHINES_ORDER[i][j/2] << "\t" << JOB_DUR_TIMES[i][j/2] << "\t";
+        for (int j = 0; j < 2 * (*machines_c); j+=2) {
+            odczyt >> machines[i][j/2] >> jobs[i][j/2];
+            std::cout << machines[i][j/2] << "\t" << jobs[i][j/2] << "\t";
         }
-        std::cout<<"\n";
     }
-    std::cout << "\n\n\n\n";
 }
 
-void read_t(std::string filename)
+void read_t(std::string filename, int* machines_c, int* jobs_c, int**& machines, int**& jobs, int max_jobs)
 {
 	std::ifstream odczyt;
 	std::string line;
@@ -49,77 +48,63 @@ void read_t(std::string filename)
 	{
 		std::cout << "Udalo sie otworzyc" << '\n';
 
-		odczyt >> JOBS_COUNT >> MACHINES_COUNT;
+		odczyt >> *jobs_c >> *machines_c;
+		if (max_jobs) *jobs_c = max_jobs;
 		/*
 		std::getline(odczyt, line);
 		std::getline(odczyt, line);
 		*/
 
-		MACHINES_ORDER = new int*[JOBS_COUNT];
-		JOB_DUR_TIMES = new int*[JOBS_COUNT];
-		for (int i = 0; i < JOBS_COUNT; ++i)
+		machines = new int*[*jobs_c];
+		jobs = new int*[*jobs_c];
+		for (int i = 0; i < *jobs_c; ++i)
 		{
-			MACHINES_ORDER[i] = new int[MACHINES_COUNT];
-			JOB_DUR_TIMES[i] = new int[MACHINES_COUNT];
+			machines[i] = new int[*machines_c];
+			jobs[i] = new int[*machines_c];
 		}
 
 		// read times
-		for (int i = 0; i < JOBS_COUNT; ++i)
-			for (int j = 0; j < MACHINES_COUNT; ++j)
-			{
-			    odczyt >> JOB_DUR_TIMES[i][j];
-			    std::cout << JOB_DUR_TIMES[i][j] << '\t';
-			}
+		for (int i = 0; i < *jobs_c; ++i)
+			for (int j = 0; j < *machines_c; ++j)
+			    odczyt >> jobs[i][j];
 		// std::getline(odczyt, line);
 		// read machines
-		std::cout << '\n';
-		int x;
-		for (int i = 0; i < JOBS_COUNT; ++i)
-		 {
-			for (int j = 0; j < MACHINES_COUNT; ++j)
-			{
-				odczyt >> x;
-				MACHINES_ORDER[i][j] = x;
-				std::cout << MACHINES_ORDER[i][j] << "\t";
-			}
-		}
+		for (int i = 0; i < *jobs_c; ++i)
+			for (int j = 0; j < *machines_c; ++j)
+				odczyt >> machines[i][j];
 		odczyt.close();
 	}
 }
 
-void write_to_file(std::string filename)
+void write_to_file(std::string filename, int machines_c, int jobs_c, int**& times)
 {
+	/*
+	Rozwiazanie podac w postaci: d³ugosc uszeregowania \n
+	momenty_rozpoczêcia_wykonywania_kolejnych_operacji_zadania1 \n
+	momenty_rozpoczêcia_wykonywania_kolejnych_operacji_zadania2 \n
+	momenty_rozpoczêcia_wykonywania_kolejnych_operacji_zadania3 \n ...
+	momenty_rozpoczêcia_wykonywania_kolejnych_operacji_ostatniego_zadania \n
+	*/
 	std::ofstream zapis;
 	zapis.open(filename, std::ios::out);
 
 	if (zapis.good())
 	{
-	    std::cout << "machines count " << MACHINES_COUNT << '\n' << "jobs count " << JOBS_COUNT << '\n';
-        zapis << "machines count " << MACHINES_COUNT << '\n' << "jobs count " << JOBS_COUNT << '\n';
-        std::cout << "Maszyny:\n";
-        for (int i = 0; i < JOBS_COUNT; ++i)
-        {
-            for (int j = 0; j < MACHINES_COUNT; ++j)
-            {
-                std::cout << MACHINES_ORDER[i][j] << "\t";
-                zapis << MACHINES_ORDER[i][j] << "\t";
-            }
-            std::cout << '\n';
-            zapis << '\n';
-        }
+	    std::cout << "machines count " << machines_c << '\n' << "jobs count " << jobs_c << '\n';
+        zapis << "machines count " << machines_c << '\n' << "jobs count " << jobs_c << '\n';
         std::cout << "Czasy:\n";
-        for (int i = 0; i < JOBS_COUNT; i++)
+        for (int i = 0; i < jobs_c; ++i)
         {
-            for (int j = 0; j < MACHINES_COUNT; j++)
+            for (int j = 0; j < machines_c; ++j)
             {
-                std::cout << JOB_DUR_TIMES[i][j] << "\t";
-                zapis << JOB_DUR_TIMES[i][j] << "\t";
+                std::cout << times[i][j] << "\t";
+                zapis << times[i][j] << "\t";
             }
             std::cout << '\n';
             zapis << '\n';
         }
-        std::cout << "machines count " << MACHINES_COUNT << '\n' << "jobs count " << JOBS_COUNT << '\n';
-        zapis << "machines count " << MACHINES_COUNT << '\n' << "jobs count " << JOBS_COUNT << '\n';
+        std::cout << "machines count " << machines_c << '\n' << "jobs count " << jobs_c << '\n';
+        zapis << "machines count " << machines_c << '\n' << "jobs count " << jobs_c << '\n';
 
         zapis.close();
     }

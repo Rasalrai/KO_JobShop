@@ -4,8 +4,7 @@
 #include <cstdio>
 #include <fstream>
 #include <string>
-//#include "constants.h"
 
-void read_t(std::string filename);
-void read_b(std::string filename);
-void write_to_file(std::string filename);
+void read_t(std::string filename, int* machines_c, int* jobs_c, int**& machines, int**& jobs, int max_jobs);
+void read_b(std::string filename, int* machines_c, int* jobs_c, int**& machines, int**& jobs, int max_jobs);
+void write_to_file(std::string filename, int machines_c, int jobs_c, int**& times);
