@@ -117,9 +117,11 @@
   <ItemGroup>
     <ClCompile Include="input_output.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="solution.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="input_output.h" />
+    <ClInclude Include="solution.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
