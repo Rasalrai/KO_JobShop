@@ -13,12 +13,10 @@ void read_b(std::string filename, int* machines_c, int* jobs_c, int**& machines,
 	odczyt.open(filename, std::ios::in);
 	if(odczyt.good())
 	{
-	    std::cout << "Udalo sie otworzyc" << '\n';
+	    //std::cout << "Udalo sie otworzyc" << '\n';
 
 		odczyt >> *jobs_c >> *machines_c;
-		if (max_jobs) *jobs_c = max_jobs;
-		// std::getline(odczyt, line);
-		// std::getline(odczyt, line);
+		if (max_jobs && max_jobs < *jobs_c) *jobs_c = max_jobs;
 
 		machines = new int*[*jobs_c];
 		jobs = new int*[*jobs_c];
@@ -46,14 +44,14 @@ void read_t(std::string filename, int* machines_c, int* jobs_c, int**& machines,
 	odczyt.open(filename, std::ios::in);
 	if (odczyt.good())
 	{
-		std::cout << "Udalo sie otworzyc" << '\n';
+		//std::cout << "Udalo sie otworzyc" << '\n';
 
 		odczyt >> *jobs_c >> *machines_c;
-		if (max_jobs) *jobs_c = max_jobs;
-		/*
+		if (max_jobs && max_jobs < *jobs_c) *jobs_c = max_jobs;
+		
 		std::getline(odczyt, line);
 		std::getline(odczyt, line);
-		*/
+		
 
 		machines = new int*[*jobs_c];
 		jobs = new int*[*jobs_c];
@@ -65,13 +63,28 @@ void read_t(std::string filename, int* machines_c, int* jobs_c, int**& machines,
 
 		// read times
 		for (int i = 0; i < *jobs_c; ++i)
+		{
 			for (int j = 0; j < *machines_c; ++j)
-			    odczyt >> jobs[i][j];
-		// std::getline(odczyt, line);
+			{
+				odczyt >> jobs[i][j];
+				//std::cout << jobs[i][j] << '\t';
+			}
+			//std::cout << '\n';
+		}
+		//std::cout << "\n\n";
+		odczyt.ignore();
+		std::getline(odczyt, line);
+		//std::cout << line << '\n';
 		// read machines
 		for (int i = 0; i < *jobs_c; ++i)
 			for (int j = 0; j < *machines_c; ++j)
+			{
 				odczyt >> machines[i][j];
+				machines[i][j]--;
+				//std::cout << machines[i][j] << '\t';
+			}
+			/*for (int j = 0; j < *machines_c; ++j)
+				odczyt >> machines[i][j];*/
 		odczyt.close();
 	}
 }
@@ -90,9 +103,8 @@ void write_to_file(std::string filename, int machines_c, int jobs_c, int64_t**& 
 
 	if (zapis.good())
 	{
-	    std::cout << "machines count " << machines_c << '\n' << "jobs count " << jobs_c << '\n';
-        zapis << "machines count " << machines_c << '\n' << "jobs count " << jobs_c << '\n';
-        std::cout << "Czasy:\n";
+	    //std::cout << "machines count " << machines_c << '\n' << "jobs count " << jobs_c << '\n';
+        //zapis << "machines count " << machines_c << '\n' << "jobs count " << jobs_c << '\n';
         for (int i = 0; i < jobs_c; ++i)
         {
             for (int j = 0; j < machines_c; ++j)
@@ -103,9 +115,6 @@ void write_to_file(std::string filename, int machines_c, int jobs_c, int64_t**& 
             std::cout << '\n';
             zapis << '\n';
         }
-        std::cout << "machines count " << machines_c << '\n' << "jobs count " << jobs_c << '\n';
-        zapis << "machines count " << machines_c << '\n' << "jobs count " << jobs_c << '\n';
-
         zapis.close();
     }
 }

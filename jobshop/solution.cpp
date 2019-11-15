@@ -34,7 +34,6 @@ int64_t** job_shop(int machines_c, int jobs_c, int**& proc_order, int**& proc_ti
 	int64_t** tmp;
 
 	// choose order of jobs scheduling
-	//int job_order[] = {9, 5, 0, 1, 2,3,4,6,7,8}; // new int[jobs_c];
 	int* job_order = new int[jobs_c];
 	for (int i = 0; i < jobs_c; ++i) job_order[i] = i;
 
@@ -58,7 +57,7 @@ int64_t** job_shop(int machines_c, int jobs_c, int**& proc_order, int**& proc_ti
 				tmp = best_start_times;
 				best_start_times = start_times;
 				start_times = tmp;
-				std::cout << curr_time << ' ';
+				//std::cout << curr_time << ' ';
 			}
 
 			// new order
@@ -69,7 +68,7 @@ int64_t** job_shop(int machines_c, int jobs_c, int**& proc_order, int**& proc_ti
 		}
 	}
 	// TODO you could return start times of the best solution instead of passing it up there
-	std::cout << "\n" << best_time << "\n";
+	//std::cout << "\n" << best_time << "\n";
 	return best_start_times;
 }
 

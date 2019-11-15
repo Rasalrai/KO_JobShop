@@ -31,17 +31,18 @@ int main(int argc, char *argv[])
 	int** MACHINES_ORDER;   // maszyny
 	int** JOB_DUR_TIMES;    // czasy
 	int64_t** start_times;		// solution
-	int MACHINES_COUNT, JOBS_COUNT, MAX_JOBS = 0, TIME_LIMIT = 3;
+	int MACHINES_COUNT, JOBS_COUNT, MAX_JOBS = 0, TIME_LIMIT = 5;
+
+	//for (int i = 0; i < argc; ++i) std::cout << i << ' ' << argv[i] << '\t';
 
 	std::string input_file = argv[1];
 	std::string file_type = argv[2];
-	/*if (argc > 2)
-	{
-		MAX_JOBS = std::stoi(argv[3]);
-		if (argc > 3) TIME_LIMIT = std::stoi(argv[4]);
-	}*/
 
-	std::cout << "filename: " << input_file << ", type: " << file_type << '\n';
+	if (argc > 3)
+	{
+		TIME_LIMIT = std::stoi(argv[3]);
+		
+	}if (argc > 4) MAX_JOBS = std::stoi(argv[4]);
 
 	if (file_type[0] == 't' || file_type[0] == 'T')
 	    read_t(input_file, &MACHINES_COUNT, &JOBS_COUNT, MACHINES_ORDER, JOB_DUR_TIMES, MAX_JOBS);
@@ -53,9 +54,9 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 	// solve
-	std::cout << "### SOLVING ###\n\n";
+	//std::cout << "### SOLVING ###\n\n";
 	start_times = job_shop(MACHINES_COUNT, JOBS_COUNT, MACHINES_ORDER, JOB_DUR_TIMES, START_TIME, TIME_LIMIT);
-	std::cout << "\n\n### OVER ###\n\n";
+	//std::cout << "\n\n### OVER ###\n\n";
 	write_to_file("wynik.txt", MACHINES_COUNT, JOBS_COUNT, start_times);
 	return 0;
 }
