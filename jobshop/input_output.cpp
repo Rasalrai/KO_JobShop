@@ -33,13 +33,13 @@ void read_b(std::string filename, int* machines_c, int* jobs_c, int**& machines,
     {
         for (int j = 0; j < 2 * (*machines_c); j+=2) {
             odczyt >> machines[i][j/2] >> jobs[i][j/2];
-            std::cout << machines[i][j/2] << "\t" << jobs[i][j/2] << "\t";
         }
     }
 }
 
 void read_t(std::string filename, int* machines_c, int* jobs_c, int**& machines, int**& jobs, int max_jobs)
 {
+	// TODO files in this format have additional lines
 	std::ifstream odczyt;
 	std::string line;
 
@@ -76,7 +76,7 @@ void read_t(std::string filename, int* machines_c, int* jobs_c, int**& machines,
 	}
 }
 
-void write_to_file(std::string filename, int machines_c, int jobs_c, int**& times)
+void write_to_file(std::string filename, int machines_c, int jobs_c, int64_t**& times)
 {
 	/*
 	Rozwiazanie podac w postaci: d³ugosc uszeregowania \n
