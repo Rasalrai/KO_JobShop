@@ -64,7 +64,7 @@ int64_t** job_shop(int machines_c, int jobs_c, int**& proc_order, int**& proc_ti
 			/*job_order[0] = job_order[0] ^ job_order[i + 1];
 			job_order[i + 1] = job_order[0] ^ job_order[i + 1];
 			job_order[0] = job_order[0] ^ job_order[i + 1];*/
-			std::random_shuffle(job_order+2, job_order + jobs_c);
+			std::random_shuffle(job_order, job_order + jobs_c);
 		}
 	}
 	// TODO you could return start times of the best solution instead of passing it up there
