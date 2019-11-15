@@ -1,14 +1,12 @@
 #include <cstdlib>
 #include <iostream>
 #include <cstdio>
-#include <fstream>
 #include <string>
 #include <ctime>
+#include <cstdint>
 #include "input_output.h"
 #include "solution.h"
 
-
-// TODO: requirement: argument to limit number of jobs taken into account
 /*
 argv:
 	[1] input_file
@@ -28,9 +26,10 @@ int main(int argc, char *argv[])
 	// start counting time
 	START_TIME = time(NULL);
 
-	int** MACHINES_ORDER;   // maszyny
-	int** JOB_DUR_TIMES;    // czasy
-	int64_t** start_times;		// solution
+	std::vector< std::vector<int> > machines_order;
+	std::vector< std::vector<int> > job_dur_times;
+	std::vector< std::vector<int64_t> > start_times;
+
 	int MACHINES_COUNT, JOBS_COUNT, MAX_JOBS = 0, TIME_LIMIT = 5;
 
 	//for (int i = 0; i < argc; ++i) std::cout << i << ' ' << argv[i] << '\t';
@@ -41,13 +40,13 @@ int main(int argc, char *argv[])
 	if (argc > 3)
 	{
 		TIME_LIMIT = std::stoi(argv[3]);
-		
-	}if (argc > 4) MAX_JOBS = std::stoi(argv[4]);
+		if (argc > 4) MAX_JOBS = std::stoi(argv[4]);
+	}
 
 	if (file_type[0] == 't' || file_type[0] == 'T')
-	    read_t(input_file, &MACHINES_COUNT, &JOBS_COUNT, MACHINES_ORDER, JOB_DUR_TIMES, MAX_JOBS);
+	    read_t(input_file, MACHINES_COUNT, JOBS_COUNT, machines_order, job_dur_times, MAX_JOBS);
 	else if (file_type[0] == 'b' || file_type[0] == 'B')
-		read_b(input_file, &MACHINES_COUNT, &JOBS_COUNT, MACHINES_ORDER, JOB_DUR_TIMES, MAX_JOBS);
+		read_b(input_file, MACHINES_COUNT, JOBS_COUNT, machines_order, job_dur_times, MAX_JOBS);
 	else
 	{
 		std::cout << "Incorrect argument format: file_type (argv[2])\n";
@@ -55,7 +54,7 @@ int main(int argc, char *argv[])
 	}
 	// solve
 	//std::cout << "### SOLVING ###\n\n";
-	start_times = job_shop(MACHINES_COUNT, JOBS_COUNT, MACHINES_ORDER, JOB_DUR_TIMES, START_TIME, TIME_LIMIT);
+	start_times = job_shop(MACHINES_COUNT, JOBS_COUNT, machines_order, job_dur_times, START_TIME, TIME_LIMIT);
 	//std::cout << "\n\n### OVER ###\n\n";
 	write_to_file("wynik.txt", MACHINES_COUNT, JOBS_COUNT, start_times);
 	return 0;

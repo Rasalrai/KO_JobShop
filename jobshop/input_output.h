@@ -1,10 +1,8 @@
 #pragma once
-#include <cstdlib>
+#include <vector>
 #include <iostream>
-#include <cstdio>
-#include <fstream>
-#include <string>
+#include <cstdint>
 
-void read_t(std::string filename, int* machines_c, int* jobs_c, int**& machines, int**& jobs, int max_jobs);
-void read_b(std::string filename, int* machines_c, int* jobs_c, int**& machines, int**& jobs, int max_jobs);
-void write_to_file(std::string filename, int machines_c, int jobs_c, int64_t**& times);
+void read_b(std::string filename, int& machines_c, int& jobs_c, std::vector< std::vector<int> >& machines, std::vector< std::vector<int> >& jobs, int max_jobs);
+void read_t(std::string filename, int& machines_c, int& jobs_c, std::vector< std::vector<int> >& machines, std::vector< std::vector<int> >& jobs, int max_jobs);
+void write_to_file(std::string filename, int machines_c, int jobs_c, std::vector< std::vector<int64_t> > times);
