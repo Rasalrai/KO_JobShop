@@ -94,7 +94,7 @@ void exec_job(int job_no, int machines_c, std::vector<int>& proc_order, std::vec
 		if (!task_dur)                                       // task duration is 0
 			start_times[i] = last_ended;
 
-		else if (machines_usage[machine_no].size() == 1)     // if no jobs assigned yet
+		else if (machines_usage[machine_no].size() == 1)     // if no jobs assigned yet: allocate as soon as the previous task has ended
 		{
 			start_times[i] = last_ended;
 			machines_usage[machine_no].push_back(last_ended);
@@ -103,9 +103,12 @@ void exec_job(int job_no, int machines_c, std::vector<int>& proc_order, std::vec
 		else
 		{
 			scheduled = 0;
+			// search for an available window for this
+			// you can put it either right after previous task done by this machine, or some time after
+			// TODO binary search for the first available window
 			for (int j = 1; j < machines_usage[machine_no].size(); j += 2)
 			{
-				if ((machines_usage[machine_no][j] - machines_usage[machine_no][j - 1]) >= task_dur)
+				if (machines_usage[machine_no][j-1] >= last_ended && (machines_usage[machine_no][j] - machines_usage[machine_no][j - 1]) >= task_dur)
 				{
 					start_times[i] = machines_usage[machine_no][j + 1];
 					machines_usage[machine_no][j] = machines_usage[machine_no][j - 1] + task_dur;

@@ -90,10 +90,10 @@ void write_to_file(std::string filename, int machines_c, int jobs_c, std::vector
 {
 	/*
 	Rozwiazanie podac w postaci: d_ugosc uszeregowania \n
-	momenty_rozpocz_cia_wykonywania_kolejnych_operacji_zadania1 \n
-	momenty_rozpocz_cia_wykonywania_kolejnych_operacji_zadania2 \n
-	momenty_rozpocz_cia_wykonywania_kolejnych_operacji_zadania3 \n ...
-	momenty_rozpocz_cia_wykonywania_kolejnych_operacji_ostatniego_zadania \n
+	momenty_rozpoczecia_wykonywania_kolejnych_operacji_zadania1 \n
+	momenty_rozpoczecia_wykonywania_kolejnych_operacji_zadania2 \n
+	momenty_rozpoczecia_wykonywania_kolejnych_operacji_zadania3 \n ...
+	momenty_rozpoczecia_wykonywania_kolejnych_operacji_ostatniego_zadania \n
 	*/
 	std::ofstream zapis;
 	zapis.open(filename, std::ios::out);
