@@ -36,7 +36,7 @@ void read_b(std::string filename, int& machines_c, int& jobs_c, std::vector< std
     }
 }
 
-void read_t(std::string filename, int& machines_c, int& jobs_c, std::vector< std::vector<int> >& machines, std::vector< std::vector<int> >& jobs, int max_jobs)
+void read_t(std::string filename, int& machines_c, int& jobs_c, std::vector< std::vector<int> >& machines, std::vector< std::vector<int> >& times, int max_jobs)
 {
 	// TODO files in this format have additional lines
 	std::ifstream odczyt;
@@ -53,20 +53,20 @@ void read_t(std::string filename, int& machines_c, int& jobs_c, std::vector< std
 		std::getline(odczyt, line);
 		std::getline(odczyt, line);
 
-		std::vector< std::vector<int> > machines(jobs_c);
-		std::vector< std::vector<int> > jobs(jobs_c);
+		machines.resize(jobs_c);
+		times.resize(jobs_c);
 		for (int i = 0; i < jobs_c; ++i)
 		{
 			machines[i].resize(machines_c);
-			jobs[i].resize(machines_c);
+			times[i].resize(machines_c);
 		}
 
 		// read times
 		for (int i = 0; i < jobs_c; ++i)
 			for (int j = 0; j < machines_c; ++j)
 			{
-				odczyt >> jobs[i][j];
-				//std::cout << jobs[i][j] << '\t';
+				odczyt >> times[i][j];
+				//std::cout << times[i][j] << '\t';
 			}
 		//std::cout << "\n\n";
 		odczyt.ignore();

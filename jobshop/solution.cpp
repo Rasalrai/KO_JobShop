@@ -31,7 +31,7 @@ std::vector< std::vector<int64_t> > job_shop(int machines_c, int jobs_c, std::ve
 	    best_start_times[i].resize(machines_c);
 	}
 
-	std::vector< std::vector<int64_t> >* p_times = &start_times, * p_best_times = &best_start_times, *p_temp;     // can I even do that?
+	std::vector< std::vector<int64_t> >* p_times = &start_times, * p_best_times = &best_start_times, *p_temp;
 
 	int64_t best_time = INT64_MAX, curr_time;
 
