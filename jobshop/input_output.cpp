@@ -5,8 +5,8 @@
 #include <string>
 #include <cstdint>
 #include "input_output.h"
-2
-void read_b(std::string filename, int& machines_c, int& jobs_c, std::vector< std::vector<int> >& machines, std::vector< std::vector<int> >& jobs, int max_jobs)
+
+void read_b(std::string filename, int& machines_c, int& jobs_c, std::vector< std::vector<int> >& machines, std::vector< std::vector<int> >& times, int max_jobs)
 {
 	std::ifstream odczyt;
 	std::string line;
@@ -24,13 +24,13 @@ void read_b(std::string filename, int& machines_c, int& jobs_c, std::vector< std
 		for (int i = 0; i < jobs_c; ++i)
 		{
 			machines[i].resize(machines_c);
-			jobs[i].resize(machines_c);
+			times[i].resize(machines_c);
 		}
 
         for (int i = 0; i < jobs_c; ++i)
         {
             for (int j = 0; j < 2 * (machines_c); j+=2) {
-                odczyt >> machines[i][j/2] >> jobs[i][j/2];
+                odczyt >> machines[i][j/2] >> times[i][j/2];
             }
         }
     }
