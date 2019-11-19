@@ -106,13 +106,33 @@ void exec_job(int job_no, int machines_c, std::vector<int>& proc_order, std::vec
 			// search for an available window for this
 			// you can put it either right after previous task done by this machine, or some time after
 			// TODO binary search for the first available window
-			for (int j = 1; j < machines_usage[machine_no].size(); j += 2)
+			for (std::vector<int64_t>::iterator j = machines_usage[machine_no].begin(); j != machines_usage[machine_no].end(); j += 2)
 			{
-				if (machines_usage[machine_no][j-1] >= last_ended && (machines_usage[machine_no][j] - machines_usage[machine_no][j - 1]) >= task_dur)
+				if (*(j-1) >= last_ended && task_dur >= (*j - *(j-1)) && task_dur >= (*j - last_ended))
+				//fits into window and is after previous task
 				{
-					start_times[i] = machines_usage[machine_no][j + 1];
-					machines_usage[machine_no][j] = machines_usage[machine_no][j - 1] + task_dur;
-					scheduled = 1;
+                    if(last_ended <= *(j-1))
+                    {
+                        // execute this task as soon as the machine is free
+                        start_times[i] = *(j-1);
+                        *(j-1) += task_dur;
+                        scheduled = 1;
+                    }
+                    else
+                    {
+                        // execute later -> need to insert into vector
+                        start_times[i] = last_ended;
+                        if(task_dur == (*j - last_ended))
+                        {
+                            *j = last_ended;
+                        }
+                        else
+                        {
+                            machines_usage[machine_no].insert(j, last_ended);
+                            machines_usage[machine_no].insert(j+1, last_ended+task_dur);
+                            scheduled = 1;
+                        }
+                    }
 				}
 			}
 			if (!scheduled)

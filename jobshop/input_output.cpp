@@ -5,7 +5,7 @@
 #include <string>
 #include <cstdint>
 #include "input_output.h"
-
+2
 void read_b(std::string filename, int& machines_c, int& jobs_c, std::vector< std::vector<int> >& machines, std::vector< std::vector<int> >& jobs, int max_jobs)
 {
 	std::ifstream odczyt;
@@ -19,8 +19,8 @@ void read_b(std::string filename, int& machines_c, int& jobs_c, std::vector< std
 		odczyt >> jobs_c >> machines_c;
 		if (max_jobs && max_jobs < jobs_c) jobs_c = max_jobs;
 
-		std::vector< std::vector<int> > machines(jobs_c);
-		std::vector< std::vector<int> > jobs(jobs_c);
+		machines.resize(jobs_c);
+		times.resize(jobs_c);
 		for (int i = 0; i < jobs_c; ++i)
 		{
 			machines[i].resize(machines_c);
