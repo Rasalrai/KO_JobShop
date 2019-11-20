@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cstdint>
 #include "solution.h"
+#define MU_MN machines_usage[machine_no]
 
 bool time_passed(time_t start, int limit)
 /* true if _limit_ minutes passed since beginning of execution of the program */
@@ -42,6 +43,7 @@ std::vector< std::vector<int64_t> > job_shop(int machines_c, int jobs_c, std::ve
 	//while (!time_passed(start_stamp, time_limit))
 	{
 		while (!time_passed(start_stamp, time_limit))
+//        for (int i = 0; i < 10; ++i)
 		{
 			// clear machines usage
 			for (int j = 0; j < machines_c; ++j)
@@ -58,7 +60,7 @@ std::vector< std::vector<int64_t> > job_shop(int machines_c, int jobs_c, std::ve
 				p_temp = p_best_times;
 				p_best_times = p_times;
 				p_times = p_best_times;
-				//std::cout << curr_time << ' ';
+				std::cout << curr_time << ' ';
 			}
 			std::random_shuffle(job_order.begin(), job_order.end());
 		}
@@ -78,6 +80,7 @@ int64_t fit_jobs(int machines_c, int jobs_c, std::vector< std::vector<int> >& pr
 	for (int i = 1; i < machines_c; ++i)
 		if (machines_usage[i].back() > max_time) max_time = machines_usage[i].back();
 
+    std::cout << "\n\n";
 	return max_time;
 }
 
@@ -94,17 +97,17 @@ void exec_job(int job_no, int machines_c, std::vector<int>& proc_order, std::vec
 		if (!task_dur)                                       // task duration is 0
 			start_times[i] = last_ended;
 
-		else if (machines_usage[machine_no].size() == 1)     // if no jobs assigned yet: allocate as soon as the previous task has ended
+		else if (MU_MN.size() == 1)     // if no jobs assigned yet: allocate as soon as the previous task has ended
 		{
 			if (last_ended)
 			{
 				start_times[i] = last_ended;
-				machines_usage[machine_no].push_back(last_ended);
-				machines_usage[machine_no].push_back(last_ended + task_dur);
+				MU_MN.push_back(last_ended);
+				MU_MN.push_back(last_ended + task_dur);
 			}
 			else
 			{
-				machines_usage[machine_no][0] = task_dur;
+				MU_MN[0] = task_dur;
 				start_times[i] = 0;
 			}
 		}
@@ -114,16 +117,17 @@ void exec_job(int job_no, int machines_c, std::vector<int>& proc_order, std::vec
 			// search for an available window for this
 			// you can put it either right after previous task done by this machine, or some time after
 			// TODO binary search for the first available window
-			for (std::vector<int64_t>::iterator j = machines_usage[machine_no].begin() + 1; j <= machines_usage[machine_no].end(); j += 2)
+			// for (std::vector<int64_t>::iterator j = machines_usage[machine_no].begin() + 1; j <= machines_usage[machine_no].end(); j += 2)
+			for (int j = MU_MN[0] + 1; j <= MU_MN.size(); j += 2)
 			{
-				if (task_dur <= (*j - *(j - 1)) && task_dur <= (*j - last_ended))
+				if (task_dur <= (MU_MN[j] - MU_MN[j-1]) && task_dur <= (MU_MN[j] - last_ended))
 					//fits into window and is after previous task
 				{
-					if (last_ended <= *(j - 1))
+					if (last_ended <= MU_MN[j-1])
 					{
 						// execute this task as soon as the machine is free
-						start_times[i] = *(j - 1);
-						*(j - 1) += task_dur;
+						start_times[i] = MU_MN[j-1];
+						MU_MN[j-1] += task_dur;
 						scheduled = 1;
 						break;
 					}
@@ -131,16 +135,14 @@ void exec_job(int job_no, int machines_c, std::vector<int>& proc_order, std::vec
 					{
 						// execute later -> need to insert into vector
 						start_times[i] = last_ended;
-						if (task_dur == (*j - last_ended))
+						if (task_dur == (MU_MN[j] - last_ended))
 						{
-							*j = last_ended;
+							MU_MN[j] = last_ended;
 						}
 						else
 						{
-							int position = j - machines_usage[machine_no].begin();
-							machines_usage[machine_no].insert(j, 2, last_ended);
-							j = machines_usage[machine_no].begin() + position;
-							*(j + 1) += task_dur;
+							MU_MN.insert(MU_MN.begin()+j, 2, last_ended);
+							MU_MN[j+1] += task_dur;
 							scheduled = 1;
 							break;
 						}
@@ -150,22 +152,24 @@ void exec_job(int job_no, int machines_c, std::vector<int>& proc_order, std::vec
 			if (!scheduled)
 			{
 				// start the task when possible - machine available or previous finished, whatever comes later
-				if (machines_usage[machine_no].back() >= last_ended)
+				if (MU_MN.back() >= last_ended)
 				{
-					start_times[i] = machines_usage[machine_no].back();
+					start_times[i] = MU_MN.back();
 					// machines_usage[machine_no][machines_usage[machine_no].size()] = machines_usage[machine_no].back() + task_dur;
 					//increase last element by task_dur
-					*(machines_usage[machine_no].end() - 1) += task_dur;
+					*(MU_MN.end() - 1) += task_dur;
 				}
 				else
 				{
 					start_times[i] = last_ended;
-					machines_usage[machine_no].push_back(last_ended);
-					machines_usage[machine_no].push_back(last_ended + task_dur);
+					MU_MN.push_back(last_ended);
+					MU_MN.push_back(last_ended + task_dur);
 				}
 			}
 		}
 		last_ended = start_times[i] + task_dur;
 	}
-	int x;
+	for(int i=0;i<start_times.size();++i)
+	    std::cout << start_times[i] << '\t';
+	std::cout << "\n";
 }

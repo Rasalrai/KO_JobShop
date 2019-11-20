@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
 	// solve
 	//std::cout << "### SOLVING ###\n\n";
 	start_times = job_shop(MACHINES_COUNT, JOBS_COUNT, machines_order, job_dur_times, START_TIME, TIME_LIMIT);
-	//std::cout << "\n\n### OVER ###\n\n";
+	std::cout << "\n\n### OVER ###\n\n";
 	write_to_file("wynik.txt", MACHINES_COUNT, JOBS_COUNT, start_times);
 	return 0;
 }
