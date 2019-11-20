@@ -58,7 +58,7 @@ std::vector< std::vector<int64_t> > job_shop(int machines_c, int jobs_c, std::ve
 
 				p_temp = p_best_times;
 				p_best_times = p_times;
-				p_times = p_best_times;
+				p_times = p_temp;
 				std::cout << "\t--" << curr_time << "--\n\n";
 			}
 			std::random_shuffle(job_order.begin(), job_order.end());
@@ -85,7 +85,6 @@ int64_t fit_jobs(int machines_c, int jobs_c, std::vector< std::vector<int> >& pr
 	int64_t max_time = machines_usage[0].back();
 	for (int i = 1; i < machines_c; ++i)
 		if (machines_usage[i].back() > max_time) max_time = machines_usage[i].back();
-
 
 	return max_time;
 }
@@ -124,7 +123,7 @@ void exec_job(int job_no, int machines_c, std::vector<int>& proc_order, std::vec
 			// you can put it either right after previous task done by this machine, or some time after
 			// TODO binary search for the first available window
 			// for (std::vector<int64_t>::iterator j = machines_usage[machine_no].begin() + 1; j <= machines_usage[machine_no].end(); j += 2)
-			for (int j = MU_MN[0] + 1; j <= MU_MN.size(); j += 2)
+			for (int j = MU_MN[0] + 1; j < MU_MN.size(); j += 2)
 			{
 				if (task_dur <= (MU_MN[j] - MU_MN[j-1]) && task_dur <= (MU_MN[j] - last_ended))
 					//fits into window and is after previous task
