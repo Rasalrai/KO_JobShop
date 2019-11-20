@@ -3,6 +3,7 @@
 #include <iostream>
 #include <algorithm>
 #include <cstdint>
+#include <random>
 #include "solution.h"
 #define MU_MN machines_usage[machine_no]
 
@@ -42,13 +43,11 @@ std::vector< std::vector<int64_t> > job_shop(int machines_c, int jobs_c, std::ve
 
 	//while (!time_passed(start_stamp, time_limit))
 	{
-		while (!time_passed(start_stamp, time_limit))
-//        for (int i = 0; i < 10; ++i)
+//		while (!time_passed(start_stamp, time_limit))
+        // clear machines usage
+		for (int j = 0; j < machines_c; ++j) machines_usage[j].resize(1);
+        for (int i = 0; i < 10; ++i)
 		{
-			// clear machines usage
-			for (int j = 0; j < machines_c; ++j)
-				machines_usage[j].resize(1);
-
 			curr_time = fit_jobs(machines_c, jobs_c, proc_order, proc_times, *p_times, machines_usage, job_order);
 			// std::cout << curr_time << ' ';
 
@@ -60,27 +59,34 @@ std::vector< std::vector<int64_t> > job_shop(int machines_c, int jobs_c, std::ve
 				p_temp = p_best_times;
 				p_best_times = p_times;
 				p_times = p_best_times;
-				std::cout << curr_time << ' ';
+				std::cout << "\t--" << curr_time << "--\n\n";
 			}
 			std::random_shuffle(job_order.begin(), job_order.end());
 		}
 	}
-	//std::cout << "\n" << best_time << "\n";
+	std::cout << best_time << "\n\n";
 	return *p_best_times;
 }
-int64_t fit_jobs(int machines_c, int jobs_c, std::vector< std::vector<int> >& proc_order, std::vector< std::vector<int> >& proc_times, std::vector< std::vector<int64_t> >& start_times, std::vector< std::vector<int64_t> >& machines_usage, std::vector<int> job_order)
+int64_t fit_jobs(int machines_c, int jobs_c, std::vector< std::vector<int> >& proc_order, std::vector< std::vector<int> >& proc_times, std::vector< std::vector<int64_t> >& start_times, std::vector< std::vector<int64_t> > machines_usage, std::vector<int> job_order)
 {
 	/* schedule time for jobs according to job_order */
 	// this can also continue an already started combinations
 	for (int i = 0; i < jobs_c; ++i)
 		exec_job(job_order[i], machines_c, proc_order[job_order[i]], proc_times[job_order[i]], start_times[job_order[i]], machines_usage);
 
+	for(int i=0;i<start_times.size();++i)
+	{
+	    for(int j=0;j<start_times[0].size();++j) std::cout << start_times[i][j] << '\t';
+	    std::cout << "\n";
+	}
+	std::cout << "\n\n";
+
 	// time of execution is max of last items of machines_usage's items
 	int64_t max_time = machines_usage[0].back();
 	for (int i = 1; i < machines_c; ++i)
 		if (machines_usage[i].back() > max_time) max_time = machines_usage[i].back();
 
-    std::cout << "\n\n";
+
 	return max_time;
 }
 
@@ -169,7 +175,4 @@ void exec_job(int job_no, int machines_c, std::vector<int>& proc_order, std::vec
 		}
 		last_ended = start_times[i] + task_dur;
 	}
-	for(int i=0;i<start_times.size();++i)
-	    std::cout << start_times[i] << '\t';
-	std::cout << "\n";
 }
