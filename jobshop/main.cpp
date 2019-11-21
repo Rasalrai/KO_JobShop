@@ -23,9 +23,6 @@ int main(int argc, char *argv[])
 	time_t START_TIME;
 	srand(time(NULL));
 
-	// start counting time
-	START_TIME = time(NULL);
-
 	std::vector< std::vector<int> > machines_order;
 	std::vector< std::vector<int> > job_dur_times;
 	std::vector< std::vector<int64_t> > start_times;
@@ -42,6 +39,9 @@ int main(int argc, char *argv[])
 		TIME_LIMIT = std::stoi(argv[3]);
 		if (argc > 4) MAX_JOBS = std::stoi(argv[4]);
 	}
+
+	// start counting time
+	START_TIME = time(NULL);
 
 	if (file_type[0] == 't' || file_type[0] == 'T')
 	    read_t(input_file, MACHINES_COUNT, JOBS_COUNT, machines_order, job_dur_times, MAX_JOBS);
