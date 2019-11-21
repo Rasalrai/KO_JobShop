@@ -19,39 +19,40 @@ std::vector< std::vector<int64_t> > job_shop(int machines_c, int jobs_c, std::ve
 {
 	// storing iterations' data
 	std::vector< std::vector<int64_t> > machines_usage(machines_c);
+	std::vector< std::vector<int64_t> > searching_priority(machines_c);
 	for (int i = 0; i < machines_c; ++i)
 	{
 		machines_usage[i].reserve(jobs_c * 2);
 		machines_usage[i].push_back(0);
+		searching_priority[i].reserve(jobs_c);
 	}
 
 	std::vector< std::vector<int64_t> > start_times(jobs_c);
 	std::vector< std::vector<int64_t> > best_start_times(jobs_c);
+	std::vector<int> job_order(jobs_c);
 	for (int i = 0; i < jobs_c; ++i)
 	{
 		start_times[i].resize(machines_c);
 		best_start_times[i].resize(machines_c);
+		job_order[i] = i;
 	}
 
 	std::vector< std::vector<int64_t> >* p_times = &start_times, *p_best_times = &best_start_times, *p_temp;
-
 	int64_t best_time = INT64_MAX, curr_time;
 
-	// choose order of jobs scheduling
-	std::vector<int> job_order(jobs_c);
-	for (int i = 0; i < jobs_c; ++i) job_order[i] = i;
-
-	for (int j = 0; j < machines_c; ++j) machines_usage[j].resize(1);
-
-	while (!time_passed(start_stamp, time_limit))
+	for (int i = 0; i < machines_c; ++i)	// position
 	{
-//		while (!time_passed(start_stamp, time_limit))
-        // clear machines usage
-		
-        //for (int i = 0; i < 20; ++i)
+		// check one option of every possible no on this position
+
+		// sort them by time
+
+		// going by the order of sorted positions, check like this for further positions (always save the best result)
+		// you can save the state after execution of one (two, etc) job and call fit_jobs without this, for already started MU
+
+		while (!time_passed(start_stamp, time_limit))
+        //for (int i = 0; i < 30; ++i)
 		{
 			curr_time = fit_jobs(machines_c, jobs_c, proc_order, proc_times, *p_times, machines_usage, job_order);
-			// std::cout << curr_time << ' ';
 
 			// compare with previous best
 			if (curr_time < best_time)
@@ -63,8 +64,10 @@ std::vector< std::vector<int64_t> > job_shop(int machines_c, int jobs_c, std::ve
 				p_times = p_temp;
 				//std::cout << "\t--" << curr_time << "--\n\n";
 			}
-			std::random_shuffle(job_order.begin(), job_order.end());
 		}
+		// time passed
+		std::cout << best_time << "\n\n";
+		return *p_best_times;
 	}
 	std::cout << best_time << "\n\n";
 	return *p_best_times;
@@ -176,4 +179,51 @@ void exec_job(int job_no, int machines_c, std::vector<int>& proc_order, std::vec
 		}
 		last_ended = start_times[i] + task_dur;
 	}
+}
+
+void job_ordering(std::vector<int>* begin, std::vector<int>* end)
+{
+
+}
+
+std::vector< std::vector<int64_t> > random_job_shop(int machines_c, int jobs_c, std::vector< std::vector<int> >& proc_order, std::vector< std::vector<int> >& proc_times, time_t start_stamp, int time_limit)
+{
+	// storing iterations' data
+	std::vector< std::vector<int64_t> > machines_usage(machines_c);
+	for (int i = 0; i < machines_c; ++i)
+	{
+		machines_usage[i].reserve(jobs_c * 2);
+		machines_usage[i].push_back(0);
+	}
+
+	std::vector< std::vector<int64_t> > start_times(jobs_c);
+	std::vector< std::vector<int64_t> > best_start_times(jobs_c);
+	std::vector<int> job_order(jobs_c);
+	for (int i = 0; i < jobs_c; ++i)
+	{
+		start_times[i].resize(machines_c);
+		best_start_times[i].resize(machines_c);
+		job_order[i] = i;
+	}
+
+	std::vector< std::vector<int64_t> >* p_times = &start_times, *p_best_times = &best_start_times, *p_temp;
+	int64_t best_time = INT64_MAX, curr_time;
+
+	for (int i = 0; i < 100; ++i)
+	{
+		curr_time = fit_jobs(machines_c, jobs_c, proc_order, proc_times, *p_times, machines_usage, job_order);
+
+		// compare with previous best
+		if (curr_time < best_time)
+		{
+			best_time = curr_time;
+
+			p_temp = p_best_times;
+			p_best_times = p_times;
+			p_times = p_temp;
+		}
+		std::random_shuffle(job_order.begin(), job_order.end());
+	}
+	std::cout << best_time << "\n\n";
+	return *p_best_times;
 }
