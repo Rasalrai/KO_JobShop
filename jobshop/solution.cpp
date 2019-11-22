@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <random>
-#include <pair>
+#include <utility>
 
 #include "solution.h"
 
@@ -22,19 +22,8 @@ bool time_passed(time_t start, int limit)
 		return true;
 	return false;
 }
-
-V_V_INT64 job_shop(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_INT& proc_times, time_t start_stamp, int time_limit)
+V_V_INT64 js_init(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_INT& proc_times, time_t start_stamp, int time_limit, int64_t& best_time)
 {
-/*
-TODO remember to add time check
-
-if(time_passed(start_stamp, time_limit))
-{
-    std::cout << best_time << "\n\n";
-    return *p_best_times;
-}
-*/
-	// storing iterations' data
 	V_V_INT64 machines_usage(machines_c);
 	V_V_INT priority(machines_c);
 	for (int i = 0; i < machines_c; ++i)
@@ -55,71 +44,134 @@ if(time_passed(start_stamp, time_limit))
 	}
 	std::vector<bool> jobs_scheduled(jobs_c, false);
 
-	V_V_INT64* p_times = &start_times, *p_best_times = &best_start_times, *p_temp;
-	int64_t best_time = INT64_MAX, curr_time;
-    std::vector< std::pair<int, int64_t> > quality;
+	V_V_INT64 *p_best_times = &best_start_times;
+	std::vector< std::pair<int, int64_t> > quality;
 
-	// actual stuff starts here
+	// call job_shop for next positions
+	for (int i = 0; i < machines_c; ++i)		// position
+	{
+		quality.erase(quality.begin(), quality.end());
+		// go through all options
+		p_best_times = &go_through(machines_c, jobs_c, proc_order, proc_times, start_stamp, time_limit, machines_usage, priority, start_times, best_start_times, best_time, job_order, jobs_scheduled, quality);
+
+		// set priority
+		get_priorities(priority[i], quality);
+
+		// go through all options on this lvl
+		p_best_times = &job_shop(machines_c, jobs_c, proc_order, proc_times, start_stamp, time_limit, machines_usage, priority, start_times, best_start_times, best_time, job_order, jobs_scheduled, quality);
+	}
+	return *p_best_times;
+}
+
+V_V_INT64 go_through(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_INT& proc_times, time_t start_stamp, int time_limit, V_V_INT64 machines_usage, V_V_INT& priority, V_V_INT64 start_times, V_V_INT64& best_start_times, int64_t best_time, V_INT job_order, std::vector<bool> jobs_scheduled, std::vector< std::pair<int, int64_t> >& quality)
+{
+	V_V_INT64* p_times = &start_times, *p_best_times = &best_start_times, *p_temp;
+	int64_t curr_time;
 	for (int position = 0; position < machines_c; ++position)
 	{
-	    if (jobs_scheduled[i]) continue;
-	    jobs_scheduled[i] = true;
-	    job_order[i]=i;     // TODO
-	    for(int i=0;i<jobs_c;++i)
-	    {
-	        if(!jobs_scheduled[i])
-	        {
-	            jobs_scheduled[i] = true;
-	            curr_time = (machines_c, jobs_c, proc_order, proc_times, i, position, job_order, jobs_scheduled, start_times, machines_usage);
+		if (jobs_scheduled[position]) continue;
+		jobs_scheduled[position] = true;
+		job_order[position] = position;
+		for (int i = 0; i < jobs_c; ++i)
+		{
+			if (!jobs_scheduled[i])
+			{
+				jobs_scheduled[i] = true;
+				curr_time = check_iteration(machines_c, jobs_c, proc_order, proc_times, i, position, job_order, jobs_scheduled, start_times, machines_usage);
 
-                if (curr_time < best_time)
-                {
-                    best_time = curr_time;
+				if (curr_time < best_time)
+				{
+					best_time = curr_time;
 
-                    p_temp = p_best_times;
-                    p_best_times = p_times;
-                    p_times = p_temp;
-                    //std::cout << "\t--" << curr_time << "--\n\n";
-                }
-                // save curr_time
-                quality.append(i, curr_time);
-                jobs_scheduled[i] = false;
+					p_temp = p_best_times;
+					p_best_times = p_times;
+					p_times = p_temp;
+					//std::cout << "\t--" << curr_time << "--\n\n";
+				}
+				// save curr_time
+				quality.push_back(std::make_pair(i, curr_time));
+				jobs_scheduled[i] = false;
 
-                // check time
-                if(time_passed(start_stamp, time_limit))
-                {
-                    std::cout << best_time << "\n\n";
-                    return *p_best_times;
-                }
-	        }
+				// check time
+				if (time_passed(start_stamp, time_limit))
+				{
+					std::cout << best_time << "\n\n";
+					return *p_best_times;
+				}
+			}
 
-	    }
-	    // order by quality -> save priorities of the position
-        get_priorities(priority[position], quality);
+		}
+	}
+	return *p_best_times;
+}
 
-        // check time
-        if(time_passed(start_stamp, time_limit))
-        {
-            std::cout << best_time << "\n\n";
-            return *p_best_times;
-        }
-        // move to next position
+V_V_INT64 job_shop(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_INT& proc_times, time_t start_stamp, int time_limit, V_V_INT64 machines_usage, V_V_INT& priority, V_V_INT64 start_times, V_V_INT64& best_start_times, int64_t best_time, V_INT job_order, std::vector<bool> jobs_scheduled, std::vector< std::pair<int, int64_t> > quality)
+{
+	V_V_INT64* p_times = &start_times, *p_best_times = &best_start_times, *p_temp;
+	int64_t curr_time;
+
+	for (int position = 0; position < machines_c; ++position)
+	{
+		quality.erase(quality.begin(), quality.end());
+		if (jobs_scheduled[position]) continue;
+		jobs_scheduled[position] = true;
+		job_order[position] = position;
+		for (int i = 0; i < jobs_c; ++i)
+		{
+			if (!jobs_scheduled[i])
+			{
+				jobs_scheduled[i] = true;
+				curr_time = check_iteration(machines_c, jobs_c, proc_order, proc_times, i, position, job_order, jobs_scheduled, start_times, machines_usage);
+
+				if (curr_time < best_time)
+				{
+					best_time = curr_time;
+
+					p_temp = p_best_times;
+					p_best_times = p_times;
+					p_times = p_temp;
+					//std::cout << "\t--" << curr_time << "--\n\n";
+				}
+				// save curr_time
+				quality.push_back(std::make_pair(i, curr_time));
+				jobs_scheduled[i] = false;
+
+				// check time
+				if (time_passed(start_stamp, time_limit))
+				{
+					std::cout << best_time << "\n\n";
+					return *p_best_times;
+				}
+			}
+		}
+		// order by quality -> save priorities of the position
+		get_priorities(priority[position], quality);
+
+		// check time
+		if (time_passed(start_stamp, time_limit))
+		{
+			std::cout << best_time << "\n\n";
+			return *p_best_times;
+		}
+		// save state after executing this job and remember it's been executed
+
+		// move to next position
 	}
 	std::cout << best_time << "\n\n";
 	return *p_best_times;
 }
 
-int64_t fit_jobs(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_INT& proc_times, V_V_INT64& start_times, V_V_INT64 machines_usage, V_INT job_order)
+int64_t fit_jobs(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_INT& proc_times, V_V_INT64& start_times, V_V_INT64& machines_usage, V_INT job_order)
 {
-	/* schedule time for jobs according to job_order */
-	// this can also continue an already started combinations
+	/* schedule time for jobs according to job_order 
+	this can also continue an already started combinations*/
 	for (int i = 0; i < jobs_c; ++i)
 		exec_job(job_order[i], machines_c, proc_order[job_order[i]], proc_times[job_order[i]], start_times[job_order[i]], machines_usage);
 
 	/*for(int i=0;i<start_times.size();++i)
 	{
-	    for(int j=0;j<start_times[0].size();++j) std::cout << start_times[i][j] << '\t';
-	    std::cout << "\n";
+		for(int j=0;j<start_times[0].size();++j) std::cout << start_times[i][j] << '\t';
+		std::cout << "\n";
 	}
 	std::cout << "\n\n";*/
 
@@ -166,14 +218,14 @@ void exec_job(int job_no, int machines_c, V_INT& proc_order, V_INT& proc_times, 
 			// TODO binary search for the first available window
 			for (int j = MU_MN[0] + 1; j < MU_MN.size(); j += 2)
 			{
-				if (task_dur <= (MU_MN[j] - MU_MN[j-1]) && task_dur <= (MU_MN[j] - last_ended))
+				if (task_dur <= (MU_MN[j] - MU_MN[j - 1]) && task_dur <= (MU_MN[j] - last_ended))
 					//fits into window and is after previous task
 				{
-					if (last_ended <= MU_MN[j-1])
+					if (last_ended <= MU_MN[j - 1])
 					{
 						// execute this task as soon as the machine is free
-						start_times[i] = MU_MN[j-1];
-						MU_MN[j-1] += task_dur;
+						start_times[i] = MU_MN[j - 1];
+						MU_MN[j - 1] += task_dur;
 						scheduled = 1;
 						break;
 					}
@@ -187,8 +239,8 @@ void exec_job(int job_no, int machines_c, V_INT& proc_order, V_INT& proc_times, 
 						}
 						else
 						{
-							MU_MN.insert(MU_MN.begin()+j, 2, last_ended);
-							MU_MN[j+1] += task_dur;
+							MU_MN.insert(MU_MN.begin() + j, 2, last_ended);
+							MU_MN[j + 1] += task_dur;
 							scheduled = 1;
 							break;
 						}
@@ -220,43 +272,44 @@ void exec_job(int job_no, int machines_c, V_INT& proc_order, V_INT& proc_times, 
 //void job_ordering(V_INT* order_begin, V_INT* order_end, int machines_c, V_V_INT& proc_order, V_V_INT& proc_times, V_V_INT64& start_times, V_V_INT64 machines_usage)
 V_INT job_ordering(std::vector<bool> jobs_scheduled)
 {
-// returns a vector of jobs that will be executed on the top of currently done
-    V_INT job_order.reserve(jobs_c);
+	// returns a vector of jobs that will be executed on the top of currently done
+	V_INT job_order;
+	job_order.reserve(jobs_scheduled.size());
 
-    for(int j=0;j<jobs_scheduled.size();++j)
-        if (!jobs_scheduled[j])
-        {
-            job_order.append(j);
-            jobs_scheduled[j] = true;
-            break;
-        }
-    std::random_shuffle(job_order.begin(), job_order.end());
-    return job_order
+	for (int j = 0; j < jobs_scheduled.size(); ++j)
+		if (!jobs_scheduled[j])
+		{
+			job_order.push_back(j);
+			jobs_scheduled[j] = true;
+			break;
+		}
+	std::random_shuffle(job_order.begin(), job_order.end());
+	return job_order;
 }
 
 int64_t check_iteration(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_INT& proc_times, int job_no, int position, V_INT job_order, std::vector<bool> jobs_scheduled, V_V_INT64& start_times, V_V_INT64 machines_usage)
 {
-    job_order[position] = next_job;
-    jobs_scheduled[job_no] = true;
-    // find rest of the order
-    V_INT new_order = job_ordering(jobs_scheduled);
-    // add old and new order
+	//the arguments need to be in state of previous jobs already executed 
+	// find rest of the order
+	V_INT new_order = job_ordering(jobs_scheduled);
 
-    // execute
-    return fit_jobs(machines_c, jobs_c-position-1, proc_order, proc_times, start_times, machines_usage, job_order)
+	// execute
+	return fit_jobs(machines_c, jobs_c - position - 1, proc_order, proc_times, start_times, machines_usage, job_order);
 
-    // insert as executed to job_order and jobs_scheduled ???
+	// TODO insert as executed to job_order and jobs_scheduled ???
 
 }
 
 void get_priorities(V_INT& priorities, std::vector< std::pair<int, int64_t> > quality)
 {
-    // TODO
-    // quality: (job_no, exe_time)
-    // priorities is empty
+	priorities.erase(priorities.begin(), priorities.end());
+	// sort quality.second desc and put first in priorities
+	quickSort(quality, 0, quality.size()-1);
+	for (int i = 0; i < quality.size(); ++i)
+		priorities.push_back(quality[i].first);
 }
 
-V_V_INT64 random_job_shop(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_INT& proc_times, time_t start_stamp, int time_limit)
+V_V_INT64 random_job_shop(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_INT& proc_times, time_t start_stamp, int time_limit, int64_t& best_time)
 {
 	// storing iterations' data
 	V_V_INT64 machines_usage(machines_c);
@@ -277,11 +330,18 @@ V_V_INT64 random_job_shop(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_I
 	}
 
 	V_V_INT64* p_times = &start_times, *p_best_times = &best_start_times, *p_temp;
-	int64_t best_time = INT64_MAX, curr_time;
+	int64_t curr_time;
 
-	for (int i = 0; i < 100; ++i)
+	//for (int i = 0; i < 100; ++i)
+	while(!time_passed(start_stamp, time_limit))
 	{
 		curr_time = fit_jobs(machines_c, jobs_c, proc_order, proc_times, *p_times, machines_usage, job_order);
+		for (int j = 0; j < machines_c; ++j)
+		{
+			machines_usage[j].erase(machines_usage[j].begin() + 1, machines_usage[j].end());
+			machines_usage[j][0] = 0;
+		}
+			
 
 		// compare with previous best
 		if (curr_time < best_time)
@@ -291,9 +351,31 @@ V_V_INT64 random_job_shop(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_I
 			p_temp = p_best_times;
 			p_best_times = p_times;
 			p_times = p_temp;
+			//std::cout << best_time << "\n";
 		}
 		std::random_shuffle(job_order.begin(), job_order.end());
 	}
 	std::cout << best_time << "\n\n";
 	return *p_best_times;
+}
+
+void quickSort(std::vector< std::pair<int, int64_t> >& tab, int l, int r)
+{
+	int i = l, j = r;
+	int64_t k = (tab[(l + r) / 2]).second;
+	std::pair<int, int64_t> pom;
+	do
+	{
+		while (tab[i].second > k) ++i;
+		while (tab[j].second < k) --j;
+		if (i <= j)
+		{
+			pom = tab[i];
+			tab[i] = tab[j];
+			tab[j] = pom;
+			i++; j--;
+		}
+	} while (i <= j);
+	if (l < j) quickSort(tab, l, j);
+	if (r > i) quickSort(tab, i, r);
 }

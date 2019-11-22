@@ -86,7 +86,7 @@ void read_t(std::string filename, int& machines_c, int& jobs_c, std::vector< std
 	}
 }
 
-void write_to_file(std::string filename, int machines_c, int jobs_c, std::vector< std::vector<int64_t> > times)
+void write_to_file(std::string filename, int machines_c, int jobs_c, int64_t end_time, std::vector< std::vector<int64_t> > times)
 {
 	/*
 	Rozwiazanie podac w postaci: d_ugosc uszeregowania \n
@@ -100,6 +100,8 @@ void write_to_file(std::string filename, int machines_c, int jobs_c, std::vector
 
 	if (zapis.good())
 	{
+		std::cout << end_time << "\n";
+		zapis << end_time << "\n";
 	    //std::cout << "machines count " << machines_c << '\n' << "jobs count " << jobs_c << '\n';
         //zapis << "machines count " << machines_c << '\n' << "jobs count " << jobs_c << '\n';
         for (int i = 0; i < jobs_c; ++i)

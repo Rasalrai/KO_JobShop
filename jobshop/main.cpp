@@ -22,6 +22,7 @@ int main(int argc, char *argv[])
 
 	time_t START_TIME;
 	srand(time(NULL));
+	int64_t best_time = INT64_MAX;
 
 	std::vector< std::vector<int> > machines_order;
 	std::vector< std::vector<int> > job_dur_times;
@@ -54,8 +55,8 @@ int main(int argc, char *argv[])
 	}
 	// solve
 	//std::cout << "### SOLVING ###\n\n";
-	start_times = job_shop(MACHINES_COUNT, JOBS_COUNT, machines_order, job_dur_times, START_TIME, TIME_LIMIT);
+	start_times = random_job_shop(MACHINES_COUNT, JOBS_COUNT, machines_order, job_dur_times, START_TIME, TIME_LIMIT, best_time);
 	//std::cout << "\n\n### OVER ###\n\n";
-	write_to_file("wynik.txt", MACHINES_COUNT, JOBS_COUNT, start_times);
+	write_to_file("wynik.txt", MACHINES_COUNT, JOBS_COUNT, best_time, start_times);
 	return 0;
 }
