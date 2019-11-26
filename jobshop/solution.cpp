@@ -195,21 +195,6 @@ void exec_job(int job_no, int machines_c, V_INT& proc_order, V_INT& proc_times, 
 		task_dur = proc_times[i];
 		if (!task_dur)                                       // task duration is 0
 			start_times[i] = last_ended;
-
-		else if (MU_MN.size() == 1)     // if no jobs assigned yet: allocate as soon as the previous task has ended
-		{
-			if (last_ended)
-			{
-				start_times[i] = last_ended;
-				MU_MN.push_back(last_ended);
-				MU_MN.push_back(last_ended + task_dur);
-			}
-			else
-			{
-				MU_MN[0] = task_dur;
-				start_times[i] = 0;
-			}
-		}
 		else
 		{
 			scheduled = 0;
@@ -341,7 +326,6 @@ V_V_INT64 random_job_shop(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_I
 			machines_usage[j].erase(machines_usage[j].begin() + 1, machines_usage[j].end());
 			machines_usage[j][0] = 0;
 		}
-			
 
 		// compare with previous best
 		if (curr_time < best_time)
