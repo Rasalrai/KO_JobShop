@@ -6,7 +6,7 @@
 #include <cstdint>
 #include "input_output.h"
 
-void read_b(std::string filename, int& machines_c, int& jobs_c, std::vector< std::vector<int> >& machines, std::vector< std::vector<int> >& times, int max_jobs)
+void read_b(std::string filename, int& machines_c, int& jobs_c, std::vector< std::vector<int> >& machines, std::vector< std::vector<int> >& times)
 {
 	std::ifstream odczyt;
 	std::string line;
@@ -17,7 +17,6 @@ void read_b(std::string filename, int& machines_c, int& jobs_c, std::vector< std
 	    //std::cout << "Udalo sie otworzyc" << '\n';
 
 		odczyt >> jobs_c >> machines_c;
-		if (max_jobs && max_jobs < jobs_c) jobs_c = max_jobs;
 
 		machines.resize(jobs_c);
 		times.resize(jobs_c);
@@ -36,7 +35,7 @@ void read_b(std::string filename, int& machines_c, int& jobs_c, std::vector< std
     }
 }
 
-void read_t(std::string filename, int& machines_c, int& jobs_c, std::vector< std::vector<int> >& machines, std::vector< std::vector<int> >& times, int max_jobs)
+void read_t(std::string filename, int& machines_c, int& jobs_c, std::vector< std::vector<int> >& machines, std::vector< std::vector<int> >& times)
 {
 	// TODO files in this format have additional lines
 	std::ifstream odczyt;
@@ -48,7 +47,6 @@ void read_t(std::string filename, int& machines_c, int& jobs_c, std::vector< std
 		//std::cout << "Udalo sie otworzyc" << '\n';
 
 		odczyt >> jobs_c >> machines_c;
-		if (max_jobs && max_jobs < jobs_c) jobs_c = max_jobs;
 		
 		std::getline(odczyt, line);
 		std::getline(odczyt, line);

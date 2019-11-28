@@ -51,14 +51,15 @@ int main(int argc, char *argv[])
 	START_TIME = time(NULL);
 
 	if (file_type[0] == 't' || file_type[0] == 'T')
-	    read_t(input_file, MACHINES_COUNT, JOBS_COUNT, machines_order, job_dur_times, MAX_JOBS);
+	    read_t(input_file, MACHINES_COUNT, JOBS_COUNT, machines_order, job_dur_times);
 	else if (file_type[0] == 'b' || file_type[0] == 'B')
-		read_b(input_file, MACHINES_COUNT, JOBS_COUNT, machines_order, job_dur_times, MAX_JOBS);
+		read_b(input_file, MACHINES_COUNT, JOBS_COUNT, machines_order, job_dur_times);
 	else
 	{
 		std::cout << "Incorrect argument format: file_type (argv[2])\n";
 		return 1;
 	}
+	if (MAX_JOBS < JOBS_COUNT) JOBS_COUNT = MAX_JOBS;
 	// solve
 	//std::cout << "### SOLVING ###\n\n";
 	start_times = random_job_shop(MACHINES_COUNT, JOBS_COUNT, machines_order, job_dur_times, START_TIME, TIME_LIMIT, best_time);
