@@ -102,16 +102,18 @@ void write_to_file(std::string filename, int machines_c, int jobs_c, int64_t end
 	{
 		std::cout << end_time << "\n";
 		zapis << end_time << "\n";
+		/*
 	    //std::cout << "machines count " << machines_c << '\n' << "jobs count " << jobs_c << '\n';
         //zapis << "machines count " << machines_c << '\n' << "jobs count " << jobs_c << '\n';
+		*/
         for (int i = 0; i < jobs_c; ++i)
         {
             for (int j = 0; j < machines_c; ++j)
             {
-                std::cout << times[i][j] << "\t";
+                //std::cout << times[i][j] << "\t";
                 zapis << times[i][j] << "\t";
             }
-            std::cout << '\n';
+            //std::cout << '\n';
             zapis << '\n';
         }
         zapis.close();

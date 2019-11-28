@@ -30,6 +30,8 @@ int main(int argc, char *argv[])
 
 	int MACHINES_COUNT, JOBS_COUNT, MAX_JOBS = 0, TIME_LIMIT = 5;
 
+	std::string result_file = "wynik.txt";
+
 	//for (int i = 0; i < argc; ++i) std::cout << i << ' ' << argv[i] << '\t';
 
 	std::string input_file = argv[1];
@@ -38,7 +40,11 @@ int main(int argc, char *argv[])
 	if (argc > 3)
 	{
 		TIME_LIMIT = std::stoi(argv[3]);
-		if (argc > 4) MAX_JOBS = std::stoi(argv[4]);
+		//if (argc > 4) MAX_JOBS = std::stoi(argv[4]);
+
+
+		if (argc > 4) result_file = argv[4];
+		if (argc > 5) MAX_JOBS = std::stoi(argv[5]);
 	}
 
 	// start counting time
@@ -56,7 +62,8 @@ int main(int argc, char *argv[])
 	// solve
 	//std::cout << "### SOLVING ###\n\n";
 	start_times = random_job_shop(MACHINES_COUNT, JOBS_COUNT, machines_order, job_dur_times, START_TIME, TIME_LIMIT, best_time);
+	//std::cout << task_len_sum(job_dur_times) << "\n";
 	//std::cout << "\n\n### OVER ###\n\n";
-	write_to_file("wynik.txt", MACHINES_COUNT, JOBS_COUNT, best_time, start_times);
+	write_to_file(result_file, MACHINES_COUNT, JOBS_COUNT, best_time, start_times);
 	return 0;
 }
