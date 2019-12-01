@@ -84,7 +84,7 @@ void read_t(std::string filename, int& machines_c, int& jobs_c, std::vector< std
 	}
 }
 
-void write_to_file(std::string filename, int machines_c, int jobs_c, int64_t end_time, std::vector< std::vector<int64_t> > times)
+void write_to_file(std::string filename, int machines_c, int jobs_c, int64_t end_time, std::vector< std::vector<int64_t> > times, int max_tasks)
 {
 	/*
 	Rozwiazanie podac w postaci: d_ugosc uszeregowania \n
@@ -106,7 +106,7 @@ void write_to_file(std::string filename, int machines_c, int jobs_c, int64_t end
 		*/
         for (int i = 0; i < jobs_c; ++i)
         {
-            for (int j = 0; j < machines_c; ++j)
+            for (int j = 0; j < max_tasks; ++j)
             {
                 //std::cout << times[i][j] << "\t";
                 zapis << times[i][j] << "\t";

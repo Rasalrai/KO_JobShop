@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
 	std::vector< std::vector<int> > job_dur_times;
 	std::vector< std::vector<int64_t> > start_times;
 
-	int MACHINES_COUNT, JOBS_COUNT, MAX_JOBS = 0, TIME_LIMIT = 5;
+	int MACHINES_COUNT, JOBS_COUNT, MAX_TSK = 0, TIME_LIMIT = 5;
 
 	std::string result_file = "wynik.txt";
 
@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 
 
 		if (argc > 4) result_file = argv[4];
-		if (argc > 5) MAX_JOBS = std::stoi(argv[5]);
+		if (argc > 5) MAX_TSK = std::stoi(argv[5]);
 	}
 
 	// start counting time
@@ -59,12 +59,13 @@ int main(int argc, char *argv[])
 		std::cout << "Incorrect argument format: file_type (argv[2])\n";
 		return 1;
 	}
-	if (MAX_JOBS < JOBS_COUNT) JOBS_COUNT = MAX_JOBS;
+	if (!MAX_TSK) MAX_TSK = MACHINES_COUNT;
+	else if (MAX_TSK > MACHINES_COUNT) MAX_TSK = MACHINES_COUNT;
 	// solve
 	//std::cout << "### SOLVING ###\n\n";
-	start_times = random_job_shop(MACHINES_COUNT, JOBS_COUNT, machines_order, job_dur_times, START_TIME, TIME_LIMIT, best_time);
+	start_times = random_job_shop(MACHINES_COUNT, JOBS_COUNT, machines_order, job_dur_times, START_TIME, TIME_LIMIT, best_time, MAX_TSK);
 	//std::cout << task_len_sum(job_dur_times) << "\n";
 	//std::cout << "\n\n### OVER ###\n\n";
-	write_to_file(result_file, MACHINES_COUNT, JOBS_COUNT, best_time, start_times);
+	write_to_file(result_file, MACHINES_COUNT, JOBS_COUNT, best_time, start_times, MAX_TSK);
 	return 0;
 }

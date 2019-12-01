@@ -23,12 +23,12 @@ bool time_passed(time_t start, int limit)
 	return false;
 }
 
-int64_t fit_jobs(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_INT& proc_times, V_V_INT64& start_times, V_V_INT64& machines_usage, V_INT job_order)
+int64_t fit_jobs(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_INT& proc_times, V_V_INT64& start_times, V_V_INT64& machines_usage, V_INT job_order, int max_tasks)
 {
 	/* schedule time for jobs according to job_order 
 	this can also continue an already started combinations*/
 	for (int i = 0; i < jobs_c; ++i)
-		exec_job(job_order[i], machines_c, proc_order[job_order[i]], proc_times[job_order[i]], start_times[job_order[i]], machines_usage);
+		exec_job(job_order[i], machines_c, proc_order[job_order[i]], proc_times[job_order[i]], start_times[job_order[i]], machines_usage, max_tasks);
 
 	/*for(int i=0;i<start_times.size();++i)
 	{
@@ -45,13 +45,13 @@ int64_t fit_jobs(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_INT& proc_
 	return max_time;
 }
 
-void exec_job(int job_no, int machines_c, V_INT& proc_order, V_INT& proc_times, V_INT64& start_times, V_V_INT64& machines_usage)
+void exec_job(int job_no, int machines_c, V_INT& proc_order, V_INT& proc_times, V_INT64& start_times, V_V_INT64& machines_usage, int max_tasks)
 /* schedule execution of each of job's tasks in first available time window */
 {
 	int machine_no, task_dur;
 	int64_t last_ended = 0;
 	bool scheduled;
-	for (int i = 0; i < machines_c; ++i)
+	for (int i = 0; i < max_tasks; ++i)
 	{
 		machine_no = proc_order[i];
 		task_dur = proc_times[i];
@@ -141,14 +141,14 @@ int64_t check_iteration(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_INT
 	V_INT new_order = job_ordering(jobs_scheduled);
 
 	// execute
-	return fit_jobs(machines_c, jobs_c - position - 1, proc_order, proc_times, start_times, machines_usage, job_order);
-
+	// return fit_jobs(machines_c, jobs_c - position - 1, proc_order, proc_times, start_times, machines_usage, job_order, max_tasks);
+	return 0;
 	// TODO insert as executed to job_order and jobs_scheduled ???
-
 }
 
-V_V_INT64 random_job_shop(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_INT& proc_times, time_t start_stamp, int time_limit, int64_t& best_time)
+V_V_INT64 random_job_shop(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_INT& proc_times, time_t start_stamp, int time_limit, int64_t& best_time, int max_tasks)
 {
+	// TODO: put max_tasks wherever it's needed instead of machines_c
 	// storing iterations' data
 	V_V_INT64 machines_usage(machines_c);
 	for (int i = 0; i < machines_c; ++i)
@@ -162,18 +162,18 @@ V_V_INT64 random_job_shop(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_I
 	V_INT job_order(jobs_c);
 	for (int i = 0; i < jobs_c; ++i)
 	{
-		start_times[i].resize(machines_c);
-		best_start_times[i].resize(machines_c);
+		start_times[i].resize(max_tasks);
+		best_start_times[i].resize(max_tasks);
 		job_order[i] = i;
 	}
 
 	V_V_INT64* p_times = &start_times, *p_best_times = &best_start_times, *p_temp;
 	int64_t curr_time;
 
-	//for (int i = 0; i < 100; ++i)
-	while(!time_passed(start_stamp, time_limit))
+	for (int i = 0; i < 10; ++i)
+	//while(!time_passed(start_stamp, time_limit))
 	{
-		curr_time = fit_jobs(machines_c, jobs_c, proc_order, proc_times, *p_times, machines_usage, job_order);
+		curr_time = fit_jobs(machines_c, jobs_c, proc_order, proc_times, *p_times, machines_usage, job_order, max_tasks);
 		for (int j = 0; j < machines_c; ++j)
 		{
 			machines_usage[j].erase(machines_usage[j].begin() + 1, machines_usage[j].end());
@@ -196,11 +196,11 @@ V_V_INT64 random_job_shop(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_I
 	return *p_best_times;
 }
 
-int64_t task_len_sum(V_V_INT& proc_times)
+int64_t task_len_sum(V_V_INT& proc_times, int max_tasks)
 {
 	int64_t sum = 0;
 	for (int i = 0; i < proc_times.size(); ++i)
-		for (int j = 0; j < proc_times[i].size(); ++j)
+		for (int j = 0; j < max_tasks; ++j)
 		{
 			sum += proc_times[i][j];
 		}
