@@ -9,12 +9,13 @@
 
 /*
 argv:
-	[1] input_file
-	[2] file_type
+	[1] input file
+	[2] file type
 		t - Taillard's format
 		b - Beasley's format (orlib)
-	[3] execution time limit
-	[4] job number limit
+	[3] execution time limit, in minutes [optional; default=5]
+	[4] job number limit [optional, default=MAX (whole file)]
+	[5] result filename [optional, default="wynik.txt"]
 */
 int main(int argc, char *argv[])
 {
@@ -40,11 +41,9 @@ int main(int argc, char *argv[])
 	if (argc > 3)
 	{
 		TIME_LIMIT = std::stoi(argv[3]);
-		//if (argc > 4) MAX_JOBS = std::stoi(argv[4]);
 
-
-		if (argc > 4) result_file = argv[4];
-		if (argc > 5) MAX_TSK = std::stoi(argv[5]);
+		if (argc > 4) MAX_TSK = std::stoi(argv[4]);
+		if (argc > 5) result_file = argv[5];
 	}
 
 	// start counting time

@@ -63,7 +63,7 @@ void exec_job(int job_no, int machines_c, V_INT& proc_order, V_INT& proc_times, 
 			// search for an available window for this
 			// you can put it either right after previous task done by this machine, or some time after
 			// TODO binary search for the first available window
-			for (int j = MU_MN[0] + 1; j < MU_MN.size(); j += 2)
+			for (unsigned int j = MU_MN[0] + 1; j < MU_MN.size(); j += 2)
 			{
 				if (task_dur <= (MU_MN[j] - MU_MN[j - 1]) && task_dur <= (MU_MN[j] - last_ended))
 					//fits into window and is after previous task
@@ -123,7 +123,7 @@ V_INT job_ordering(std::vector<bool> jobs_scheduled)
 	V_INT job_order;
 	job_order.reserve(jobs_scheduled.size());
 
-	for (int j = 0; j < jobs_scheduled.size(); ++j)
+	for (unsigned int j = 0; j < jobs_scheduled.size(); ++j)
 		if (!jobs_scheduled[j])
 		{
 			job_order.push_back(j);
@@ -170,8 +170,8 @@ V_V_INT64 random_job_shop(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_I
 	V_V_INT64* p_times = &start_times, *p_best_times = &best_start_times, *p_temp;
 	int64_t curr_time;
 
-	for (int i = 0; i < 10; ++i)
-	//while(!time_passed(start_stamp, time_limit))
+	// for (int i = 0; i < 10; ++i)
+	while(!time_passed(start_stamp, time_limit))
 	{
 		curr_time = fit_jobs(machines_c, jobs_c, proc_order, proc_times, *p_times, machines_usage, job_order, max_tasks);
 		for (int j = 0; j < machines_c; ++j)
@@ -199,7 +199,7 @@ V_V_INT64 random_job_shop(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_I
 int64_t task_len_sum(V_V_INT& proc_times, int max_tasks)
 {
 	int64_t sum = 0;
-	for (int i = 0; i < proc_times.size(); ++i)
+	for (unsigned int i = 0; i < proc_times.size(); ++i)
 		for (int j = 0; j < max_tasks; ++j)
 		{
 			sum += proc_times[i][j];
