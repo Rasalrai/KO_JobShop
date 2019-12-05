@@ -148,7 +148,6 @@ int64_t check_iteration(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_INT
 
 V_V_INT64 random_job_shop(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_INT& proc_times, time_t start_stamp, int time_limit, int64_t& best_time, int max_tasks)
 {
-	// TODO: put max_tasks wherever it's needed instead of machines_c
 	// storing iterations' data
 	V_V_INT64 machines_usage(machines_c);
 	for (int i = 0; i < machines_c; ++i)
