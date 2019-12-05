@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
 	std::ios_base::sync_with_stdio(false);
 
 	time_t START_TIME;
-	srand(time(NULL));
+	srand(time(nullptr));
 	int64_t best_time = INT64_MAX;
 
 	std::vector< std::vector<int> > machines_order;
@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
 	}
 
 	// start counting time
-	START_TIME = time(NULL);
+	START_TIME = time(nullptr);
 
 	if (file_type[0] == 't' || file_type[0] == 'T')
 	    read_t(input_file, MACHINES_COUNT, JOBS_COUNT, machines_order, job_dur_times);

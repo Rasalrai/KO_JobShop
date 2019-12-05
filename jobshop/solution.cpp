@@ -3,8 +3,6 @@
 #include <iostream>
 #include <algorithm>
 #include <cstdint>
-#include <random>
-#include <utility>
 
 #include "solution.h"
 
@@ -13,12 +11,12 @@
 #define V_INT64 std::vector<int64_t>
 #define V_V_INT std::vector< std::vector<int> >
 #define V_V_INT64 std::vector< std::vector<int64_t> >
-#define Q_INT std::queue<int>
+
 
 bool time_passed(time_t start, int limit)
-/* true if _limit_ minutes passed since beginning of execution of the program */
 {
-	if (time(NULL) >= start + 60 * limit)
+    /* true if _limit_ minutes passed since beginning of execution of the program */
+	if (time(nullptr) >= start + 60 * limit)
 		return true;
 	return false;
 }
@@ -59,10 +57,9 @@ void exec_job(int job_no, int machines_c, V_INT& proc_order, V_INT& proc_times, 
 			start_times[i] = last_ended;
 		else
 		{
-			scheduled = 0;
+			scheduled = false;
 			// search for an available window for this
 			// you can put it either right after previous task done by this machine, or some time after
-			// TODO binary search for the first available window
 			for (unsigned int j = MU_MN[0] + 1; j < MU_MN.size(); j += 2)
 			{
 				if (task_dur <= (MU_MN[j] - MU_MN[j - 1]) && task_dur <= (MU_MN[j] - last_ended))
@@ -73,7 +70,7 @@ void exec_job(int job_no, int machines_c, V_INT& proc_order, V_INT& proc_times, 
 						// execute this task as soon as the machine is free
 						start_times[i] = MU_MN[j - 1];
 						MU_MN[j - 1] += task_dur;
-						scheduled = 1;
+						scheduled = true;
 						break;
 					}
 					else
@@ -88,7 +85,7 @@ void exec_job(int job_no, int machines_c, V_INT& proc_order, V_INT& proc_times, 
 						{
 							MU_MN.insert(MU_MN.begin() + j, 2, last_ended);
 							MU_MN[j + 1] += task_dur;
-							scheduled = 1;
+							scheduled = true;
 							break;
 						}
 					}
@@ -114,36 +111,6 @@ void exec_job(int job_no, int machines_c, V_INT& proc_order, V_INT& proc_times, 
 		}
 		last_ended = start_times[i] + task_dur;
 	}
-}
-
-//void job_ordering(V_INT* order_begin, V_INT* order_end, int machines_c, V_V_INT& proc_order, V_V_INT& proc_times, V_V_INT64& start_times, V_V_INT64 machines_usage)
-V_INT job_ordering(std::vector<bool> jobs_scheduled)
-{
-	// returns a vector of jobs that will be executed on the top of currently done
-	V_INT job_order;
-	job_order.reserve(jobs_scheduled.size());
-
-	for (unsigned int j = 0; j < jobs_scheduled.size(); ++j)
-		if (!jobs_scheduled[j])
-		{
-			job_order.push_back(j);
-			jobs_scheduled[j] = true;
-			break;
-		}
-	std::random_shuffle(job_order.begin(), job_order.end());
-	return job_order;
-}
-
-int64_t check_iteration(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_INT& proc_times, int job_no, int position, V_INT job_order, std::vector<bool> jobs_scheduled, V_V_INT64& start_times, V_V_INT64 machines_usage)
-{
-	//the arguments need to be in state of previous jobs already executed 
-	// find rest of the order
-	V_INT new_order = job_ordering(jobs_scheduled);
-
-	// execute
-	// return fit_jobs(machines_c, jobs_c - position - 1, proc_order, proc_times, start_times, machines_usage, job_order, max_tasks);
-	return 0;
-	// TODO insert as executed to job_order and jobs_scheduled ???
 }
 
 V_V_INT64 random_job_shop(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_INT& proc_times, time_t start_stamp, int time_limit, int64_t& best_time, int max_tasks)
@@ -197,6 +164,7 @@ V_V_INT64 random_job_shop(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_I
 
 int64_t task_len_sum(V_V_INT& proc_times, int max_tasks)
 {
+    // used for generating the report
 	int64_t sum = 0;
 	for (unsigned int i = 0; i < proc_times.size(); ++i)
 		for (int j = 0; j < max_tasks; ++j)
