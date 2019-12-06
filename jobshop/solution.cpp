@@ -16,7 +16,7 @@
 bool time_passed(time_t start, int limit)
 {
 	/* true if _limit_ minutes passed since beginning of execution of the program */
-	if (time(nullptr) >= start + 60 * limit)
+	if (time(nullptr) >= start + limit)
 		return true;
 	return false;
 }
@@ -80,6 +80,8 @@ void exec_job(int job_no, int machines_c, V_INT& proc_order, V_INT& proc_times, 
 						if (task_dur == (MU_MN[j] - last_ended))
 						{
 							MU_MN[j] = last_ended;
+                            scheduled = true;
+                            break;
 						}
 						else
 						{
