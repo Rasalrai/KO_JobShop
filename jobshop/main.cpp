@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
 	START_TIME = time(nullptr);
 
 	if (file_type[0] == 't' || file_type[0] == 'T')
-	    read_t(input_file, MACHINES_COUNT, JOBS_COUNT, machines_order, job_dur_times);
+		read_t(input_file, MACHINES_COUNT, JOBS_COUNT, machines_order, job_dur_times);
 	else if (file_type[0] == 'b' || file_type[0] == 'B')
 		read_b(input_file, MACHINES_COUNT, JOBS_COUNT, machines_order, job_dur_times);
 	else

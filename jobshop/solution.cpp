@@ -15,7 +15,7 @@
 
 bool time_passed(time_t start, int limit)
 {
-    /* true if _limit_ minutes passed since beginning of execution of the program */
+	/* true if _limit_ minutes passed since beginning of execution of the program */
 	if (time(nullptr) >= start + 60 * limit)
 		return true;
 	return false;
@@ -23,7 +23,7 @@ bool time_passed(time_t start, int limit)
 
 int64_t fit_jobs(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_INT& proc_times, V_V_INT64& start_times, V_V_INT64& machines_usage, V_INT job_order, int max_tasks)
 {
-	/* schedule time for jobs according to job_order 
+	/* schedule time for jobs according to job_order
 	this can also continue an already started combinations*/
 	for (int i = 0; i < jobs_c; ++i)
 		exec_job(job_order[i], machines_c, proc_order[job_order[i]], proc_times[job_order[i]], start_times[job_order[i]], machines_usage, max_tasks);
@@ -137,7 +137,7 @@ V_V_INT64 random_job_shop(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_I
 	int64_t curr_time;
 
 	// for (int i = 0; i < 10; ++i)
-	while(!time_passed(start_stamp, time_limit))
+	while (!time_passed(start_stamp, time_limit))
 	{
 		curr_time = fit_jobs(machines_c, jobs_c, proc_order, proc_times, *p_times, machines_usage, job_order, max_tasks);
 		for (int j = 0; j < machines_c; ++j)
@@ -164,7 +164,7 @@ V_V_INT64 random_job_shop(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_I
 
 int64_t task_len_sum(V_V_INT& proc_times, int max_tasks)
 {
-    // used for generating the report
+	// used for generating the report
 	int64_t sum = 0;
 	for (unsigned int i = 0; i < proc_times.size(); ++i)
 		for (int j = 0; j < max_tasks; ++j)
