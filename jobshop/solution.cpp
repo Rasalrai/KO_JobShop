@@ -28,13 +28,6 @@ int64_t fit_jobs(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_INT& proc_
 	for (int i = 0; i < jobs_c; ++i)
 		exec_job(job_order[i], machines_c, proc_order[job_order[i]], proc_times[job_order[i]], start_times[job_order[i]], machines_usage, max_tasks);
 
-	/*for(int i=0;i<start_times.size();++i)
-	{
-		for(int j=0;j<start_times[0].size();++j) std::cout << start_times[i][j] << '\t';
-		std::cout << "\n";
-	}
-	std::cout << "\n\n";*/
-
 	// time of execution is max of last items of machines_usage's items
 	int64_t max_time = machines_usage[0].back();
 	for (int i = 1; i < machines_c; ++i)
@@ -44,8 +37,8 @@ int64_t fit_jobs(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_INT& proc_
 }
 
 void exec_job(int job_no, int machines_c, V_INT& proc_order, V_INT& proc_times, V_INT64& start_times, V_V_INT64& machines_usage, int max_tasks)
-/* schedule execution of each of job's tasks in first available time window */
 {
+	/* schedule execution of each of job's tasks in first available time window */
 	int machine_no, task_dur;
 	int64_t last_ended = 0;
 	bool scheduled;
@@ -53,14 +46,14 @@ void exec_job(int job_no, int machines_c, V_INT& proc_order, V_INT& proc_times, 
 	{
 		machine_no = proc_order[i];
 		task_dur = proc_times[i];
-		if (!task_dur)                                       // task duration is 0
+		if (!task_dur)			// task duration is 0
 			start_times[i] = last_ended;
 		else
 		{
 			scheduled = false;
 			// search for an available window for this
 			// you can put it either right after previous task done by this machine, or some time after
-			for (unsigned int j = MU_MN[0] + 1; j < MU_MN.size(); j += 2)
+			for (unsigned int j = 1; j < MU_MN.size(); j += 2)
 			{
 				if (task_dur <= (MU_MN[j] - MU_MN[j - 1]) && task_dur <= (MU_MN[j] - last_ended))
 					//fits into window and is after previous task
@@ -139,7 +132,7 @@ V_V_INT64 random_job_shop(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_I
 	int64_t curr_time;
 
 	// for (int i = 0; i < 10; ++i)
-	while (!time_passed(start_stamp, time_limit))
+	do
 	{
 		curr_time = fit_jobs(machines_c, jobs_c, proc_order, proc_times, *p_times, machines_usage, job_order, max_tasks);
 		for (int j = 0; j < machines_c; ++j)
@@ -159,7 +152,8 @@ V_V_INT64 random_job_shop(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_I
 			//std::cout << best_time << "\n";
 		}
 		std::random_shuffle(job_order.begin(), job_order.end());
-	}
+	// } while (false);
+	} while (!time_passed(start_stamp, time_limit));
 	//std::cout << best_time << "\n\n";
 	return *p_best_times;
 }
