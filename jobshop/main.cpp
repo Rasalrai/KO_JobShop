@@ -14,7 +14,7 @@ argv:
 		t - Taillard's format
 		b - Beasley's format (orlib)
 	[3] execution time limit, in seconds [optional; default=300]
-	[4] job number limit [optional, default=MAX (whole file)]
+	[4] task number limit [optional, default=MAX (whole file)]
 	[5] result filename [optional, default="wynik.txt"]
 */
 int main(int argc, char *argv[])
@@ -32,8 +32,6 @@ int main(int argc, char *argv[])
 	int MACHINES_COUNT, JOBS_COUNT, MAX_TSK = 0, TIME_LIMIT = 300;
 
 	std::string result_file = "wynik.txt";
-
-	//for (int i = 0; i < argc; ++i) std::cout << i << ' ' << argv[i] << '\t';
 
 	std::string input_file = argv[1];
 	std::string file_type = argv[2];

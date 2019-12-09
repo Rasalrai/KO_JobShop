@@ -92,7 +92,6 @@ void exec_job(int job_no, int machines_c, V_INT& proc_order, V_INT& proc_times, 
 				if (MU_MN.back() >= last_ended)
 				{
 					start_times[i] = MU_MN.back();
-					// machines_usage[machine_no][machines_usage[machine_no].size()] = machines_usage[machine_no].back() + task_dur;
 					//increase last element by task_dur
 					*(MU_MN.end() - 1) += task_dur;
 				}
@@ -131,7 +130,6 @@ V_V_INT64 random_job_shop(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_I
 	V_V_INT64* p_times = &start_times, *p_best_times = &best_start_times, *p_temp;
 	int64_t curr_time;
 
-	// for (int i = 0; i < 10; ++i)
 	do
 	{
 		curr_time = fit_jobs(machines_c, jobs_c, proc_order, proc_times, *p_times, machines_usage, job_order, max_tasks);
@@ -149,23 +147,8 @@ V_V_INT64 random_job_shop(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_I
 			p_temp = p_best_times;
 			p_best_times = p_times;
 			p_times = p_temp;
-			//std::cout << best_time << "\n";
 		}
 		std::random_shuffle(job_order.begin(), job_order.end());
-	// } while (false);
 	} while (!time_passed(start_stamp, time_limit));
-	//std::cout << best_time << "\n\n";
 	return *p_best_times;
-}
-
-int64_t task_len_sum(V_V_INT& proc_times, int max_tasks)
-{
-	// used for generating the report
-	int64_t sum = 0;
-	for (unsigned int i = 0; i < proc_times.size(); ++i)
-		for (int j = 0; j < max_tasks; ++j)
-		{
-			sum += proc_times[i][j];
-		}
-	return sum;
 }
