@@ -3,6 +3,7 @@
 #include <iostream>
 #include <algorithm>
 #include <cstdint>
+#include <cstdlib>
 
 #include "solution.h"
 
@@ -151,13 +152,13 @@ V_V_INT64 better_job_shop(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_I
 			p_times = p_temp;
 		}
 		else
-			// keeping old order
+			// TODO check probability and either do this or not
 			new_order = old_order;
 
 		// get new permutation
 		get_neighbour(*new_order);
     }
-	while (!time_passed(start_stamp, time_limit));    // ... while time not passed or not seen all permutations
+	while (!time_passed(start_stamp, time_limit));
 	return *p_best_times;
 }
 
