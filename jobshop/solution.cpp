@@ -16,9 +16,7 @@
 bool time_passed(time_t start, int limit)
 {
 	/* true if _limit_ minutes passed since beginning of execution of the program */
-	if (time(nullptr) >= start + limit)
-		return true;
-	return false;
+    return time(nullptr) >= start + limit;
 }
 
 int64_t fit_jobs(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_INT& proc_times, V_V_INT64& start_times, V_V_INT64& machines_usage, V_INT job_order, int max_tasks)
@@ -106,6 +104,51 @@ void exec_job(int job_no, int machines_c, V_INT& proc_order, V_INT& proc_times, 
 		last_ended = start_times[i] + task_dur;
 	}
 }
+
+V_V_INT64 better_job_shop(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_INT& proc_times, time_t start_stamp, int time_limit, int64_t& best_time, int max_tasks)
+{
+    // init all the stuff
+    // incl. best one, previous, current
+    V_V_INT64 machines_usage(machines_c);
+	for (int i = 0; i < machines_c; ++i)
+	{
+		machines_usage[i].reserve(jobs_c * 2);
+		machines_usage[i].push_back(0);
+	}
+
+	V_V_INT64 start_times(jobs_c);
+	V_V_INT64 best_start_times(jobs_c);
+	V_INT job_order(jobs_c);
+	for (int i = 0; i < jobs_c; ++i)
+	{
+		start_times[i].resize(max_tasks);
+		best_start_times[i].resize(max_tasks);
+		job_order[i] = i;
+	}
+
+	V_V_INT64* p_times = &start_times, *p_best_times = &best_start_times, *p_temp;
+	int64_t curr_time;
+
+    // check the permutation...
+    do
+    {
+        // schedule the permutation
+        curr_time = fit_jobs(machines_c, jobs_c, proc_order, proc_times, *p_times, machines_usage, job_order, max_tasks);
+        for (int j = 0; j < machines_c; ++j)
+        {
+            machines_usage[j].erase(machines_usage[j].begin() + 1, machines_usage[j].end());
+            machines_usage[j][0] = 0;
+        }
+        // compare with previous
+
+    // get new permutation
+
+
+    } while (!time_passed(start_stamp, time_limit));    // ... while time not passed or not seen all permutations
+	return *p_best_times;
+
+}
+
 
 V_V_INT64 random_job_shop(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_INT& proc_times, time_t start_stamp, int time_limit, int64_t& best_time, int max_tasks)
 {
