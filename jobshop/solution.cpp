@@ -16,7 +16,7 @@
 bool time_passed(time_t start, int limit)
 {
 	/* true if _limit_ minutes passed since beginning of execution of the program */
-    return time(nullptr) >= start + limit;
+    return (time(nullptr) >= (start + limit));
 }
 
 int64_t fit_jobs(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_INT& proc_times, V_V_INT64& start_times, V_V_INT64& machines_usage, V_INT job_order, int max_tasks)
@@ -118,7 +118,7 @@ V_V_INT64 better_job_shop(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_I
 
 	V_V_INT64 start_times(jobs_c);
 	V_V_INT64 best_start_times(jobs_c);
-	V_INT job_order(jobs_c);
+	V_INT job_order(jobs_c), prev_order(jobs_c);
 	for (int i = 0; i < jobs_c; ++i)
 	{
 		start_times[i].resize(max_tasks);
@@ -127,28 +127,53 @@ V_V_INT64 better_job_shop(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_I
 	}
 
 	V_V_INT64* p_times = &start_times, *p_best_times = &best_start_times, *p_temp;
+	V_INT* new_order = &job_order, *old_order = &prev_order;
 	int64_t curr_time;
 
-    // check the permutation...
+    // actual stuff
     do
     {
-        // schedule the permutation
-        curr_time = fit_jobs(machines_c, jobs_c, proc_order, proc_times, *p_times, machines_usage, job_order, max_tasks);
+        // check the permutation
+        curr_time = fit_jobs(machines_c, jobs_c, proc_order, proc_times, *p_times, machines_usage, *new_order, max_tasks);
         for (int j = 0; j < machines_c; ++j)
         {
             machines_usage[j].erase(machines_usage[j].begin() + 1, machines_usage[j].end());
             machines_usage[j][0] = 0;
         }
-        // compare with previous
 
-    // get new permutation
+        // compare with best
+		if (curr_time < best_time)
+		{
+			best_time = curr_time;
 
+			p_temp = p_best_times;
+			p_best_times = p_times;
+			p_times = p_temp;
+		}
+		else
+			// keeping old order
+			new_order = old_order;
 
-    } while (!time_passed(start_stamp, time_limit));    // ... while time not passed or not seen all permutations
+		// get new permutation
+		get_neighbour(*new_order);
+    }
+	while (!time_passed(start_stamp, time_limit));    // ... while time not passed or not seen all permutations
 	return *p_best_times;
-
 }
 
+void get_neighbour(V_INT perm)
+{
+	// choose two different 
+	int i1 = rand() % (perm.size()), i2 = -1;
+	do
+	{
+		i2 = rand() % (perm.size());
+	} while (i1 != i2);
+
+	perm[i1] = perm[i1] ^ perm[i2];
+	perm[i2] = perm[i1] ^ perm[i2];
+	perm[i1] = perm[i1] ^ perm[i2];
+}
 
 V_V_INT64 random_job_shop(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_INT& proc_times, time_t start_stamp, int time_limit, int64_t& best_time, int max_tasks)
 {
