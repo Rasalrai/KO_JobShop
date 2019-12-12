@@ -12,24 +12,22 @@
 #define V_INT64 std::vector<int64_t>
 #define V_V_INT std::vector< std::vector<int> >
 #define V_V_INT64 std::vector< std::vector<int64_t> >
-const int K = 3;
+const double K = 0.5;
 
 
-bool time_passed(time_t start, int limit)
+inline bool time_passed(time_t& start, int& limit)
 {
 	/* true if _limit_ minutes passed since beginning of execution of the program */
     return (time(nullptr) >= (start + limit));
 }
 
-double get_temp(time_t start, int limit)
+inline double get_temp(time_t& start, int& limit)
 {
 	// used for temperature
-	return (
-		100.0 * (start + limit - time(nullptr)) / limit
-		);
+	return (100.0 * (start + limit - time(nullptr)) / limit);
 }
 
-int64_t fit_jobs(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_INT& proc_times, V_V_INT64& start_times, V_V_INT64& machines_usage, V_INT job_order, int max_tasks)
+int64_t fit_jobs(int& machines_c, int& jobs_c, V_V_INT& proc_order, V_V_INT& proc_times, V_V_INT64& start_times, V_V_INT64& machines_usage, V_INT& job_order, int& max_tasks)
 {
 	/* schedule time for jobs according to job_order
 	this can also continue an already started combinations*/
@@ -44,7 +42,7 @@ int64_t fit_jobs(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_INT& proc_
 	return max_time;
 }
 
-void exec_job(int job_no, int machines_c, V_INT& proc_order, V_INT& proc_times, V_INT64& start_times, V_V_INT64& machines_usage, int max_tasks)
+void exec_job(int& job_no, int& machines_c, V_INT& proc_order, V_INT& proc_times, V_INT64& start_times, V_V_INT64& machines_usage, int& max_tasks)
 {
 	/* schedule execution of each of job's tasks in first available time window */
 	int machine_no, task_dur;
@@ -137,14 +135,13 @@ V_V_INT64 better_job_shop(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_I
 	}
 
 	V_V_INT64* p_times = &start_times, *p_best_times = &best_start_times, *p_temp;
-	V_INT* new_order = &job_order, *old_order = &prev_order;
 	int64_t curr_time, prev_time = INT_MAX;
 	double temperature = 100;
 
     do	// actual stuff
     {
         // check the permutation
-        curr_time = fit_jobs(machines_c, jobs_c, proc_order, proc_times, *p_times, machines_usage, *new_order, max_tasks);
+        curr_time = fit_jobs(machines_c, jobs_c, proc_order, proc_times, *p_times, machines_usage, job_order, max_tasks);
         for (int j = 0; j < machines_c; ++j)
         {
             machines_usage[j].erase(machines_usage[j].begin() + 1, machines_usage[j].end());
@@ -163,45 +160,46 @@ V_V_INT64 better_job_shop(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_I
 				p_best_times = p_times;
 				p_times = p_temp;
 			}
-			// always stay with the new option
+			// always use the new option
+			prev_order = job_order;
 		}
 		// check chances of staying with previous permutation
 		else
 		{
 			temperature = get_temp(start_stamp, time_limit);
 			if (temperature <= 0) return *p_best_times;
-			else if (probability(prev_time, curr_time, temperature) > (std::rand() / RAND_MAX))
+			if (probability(prev_time, curr_time, temperature) > (std::rand() / (RAND_MAX + 1)))
 			{
-				new_order = old_order;
+				// stay with previous permutation
+				job_order = prev_order;
 			}
+			else prev_order = job_order;
 		}
 		
 		// get new permutation
-		get_neighbour(*new_order);
+		get_neighbour(job_order);
 		prev_time = curr_time;
     }
 	while (1);
 	// return *p_best_times;
 }
 
-void get_neighbour(V_INT perm)
+void get_neighbour(V_INT &perm)
 {
-	// choose two different 
+	// choose two different indices
 	int i1 = rand() % (perm.size()), i2 = -1;
 	do
 	{
 		i2 = rand() % (perm.size());
-	} while (i1 != i2);
+	} while (i1 == i2);
 
+	// swap contents of chosen indices
 	perm[i1] = perm[i1] ^ perm[i2];
 	perm[i2] = perm[i1] ^ perm[i2];
 	perm[i1] = perm[i1] ^ perm[i2];
 }
 
-inline double probability(int prev, int curr, int temp)
-{
-	return 1.0 - exp(double(curr - prev) / (K*temp));
-}
+inline double probability(int prev, int curr, int temp) { return exp(double(prev - curr) / (K*temp)); }
 
 V_V_INT64 random_job_shop(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_INT& proc_times, time_t start_stamp, int time_limit, int64_t& best_time, int max_tasks)
 {

@@ -65,6 +65,7 @@ void read_t(std::string filename, int& machines_c, int& jobs_c, std::vector< std
 		std::getline(odczyt, line); odczyt.ignore();
 
 		// read machines
+		// uncomment below for *nix, comment for Windows
 		std::getline(odczyt, line); odczyt.ignore();
 		for (int i = 0; i < jobs_c; ++i)
 			for (int j = 0; j < machines_c; ++j)
