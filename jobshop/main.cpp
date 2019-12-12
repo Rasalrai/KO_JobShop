@@ -56,8 +56,8 @@ int main(int argc, char *argv[])
 	if (!MAX_TSK) MAX_TSK = MACHINES_COUNT;
 	else if (MAX_TSK > MACHINES_COUNT) MAX_TSK = MACHINES_COUNT;
 
-	// start_times = random_job_shop(MACHINES_COUNT, JOBS_COUNT, machines_order, job_dur_times, START_TIME, TIME_LIMIT, best_time, MAX_TSK);
-	start_times = better_job_shop(MACHINES_COUNT, JOBS_COUNT, machines_order, job_dur_times, START_TIME, TIME_LIMIT, best_time, MAX_TSK);
+	//start_times = better_job_shop(MACHINES_COUNT, JOBS_COUNT, machines_order, job_dur_times, START_TIME, TIME_LIMIT, best_time, MAX_TSK);
+	start_times = random_job_shop(MACHINES_COUNT, JOBS_COUNT, machines_order, job_dur_times, START_TIME, TIME_LIMIT, best_time, MAX_TSK);
 	write_to_file(result_file, MACHINES_COUNT, JOBS_COUNT, best_time, start_times, MAX_TSK);
 	return 0;
 }

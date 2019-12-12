@@ -12,12 +12,21 @@
 #define V_INT64 std::vector<int64_t>
 #define V_V_INT std::vector< std::vector<int> >
 #define V_V_INT64 std::vector< std::vector<int64_t> >
+const int K = 3;
 
 
 bool time_passed(time_t start, int limit)
 {
 	/* true if _limit_ minutes passed since beginning of execution of the program */
     return (time(nullptr) >= (start + limit));
+}
+
+double get_temp(time_t start, int limit)
+{
+	// used for temperature
+	return (
+		100.0 * (start + limit - time(nullptr)) / limit
+		);
 }
 
 int64_t fit_jobs(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_INT& proc_times, V_V_INT64& start_times, V_V_INT64& machines_usage, V_INT job_order, int max_tasks)
@@ -129,10 +138,10 @@ V_V_INT64 better_job_shop(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_I
 
 	V_V_INT64* p_times = &start_times, *p_best_times = &best_start_times, *p_temp;
 	V_INT* new_order = &job_order, *old_order = &prev_order;
-	int64_t curr_time;
+	int64_t curr_time, prev_time = INT_MAX;
+	double temperature = 100;
 
-    // actual stuff
-    do
+    do	// actual stuff
     {
         // check the permutation
         curr_time = fit_jobs(machines_c, jobs_c, proc_order, proc_times, *p_times, machines_usage, *new_order, max_tasks);
@@ -142,24 +151,37 @@ V_V_INT64 better_job_shop(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_I
             machines_usage[j][0] = 0;
         }
 
-        // compare with best
-		if (curr_time < best_time)
+		// compare with previous
+		if (curr_time < prev_time)
 		{
-			best_time = curr_time;
+			// compare with best
+			if (curr_time < best_time)
+			{
+				best_time = curr_time;
 
-			p_temp = p_best_times;
-			p_best_times = p_times;
-			p_times = p_temp;
+				p_temp = p_best_times;
+				p_best_times = p_times;
+				p_times = p_temp;
+			}
+			// always stay with the new option
 		}
+		// check chances of staying with previous permutation
 		else
-			// TODO check probability and either do this or not
-			new_order = old_order;
-
+		{
+			temperature = get_temp(start_stamp, time_limit);
+			if (temperature <= 0) return *p_best_times;
+			else if (probability(prev_time, curr_time, temperature) > (std::rand() / RAND_MAX))
+			{
+				new_order = old_order;
+			}
+		}
+		
 		// get new permutation
 		get_neighbour(*new_order);
+		prev_time = curr_time;
     }
-	while (!time_passed(start_stamp, time_limit));
-	return *p_best_times;
+	while (1);
+	// return *p_best_times;
 }
 
 void get_neighbour(V_INT perm)
@@ -174,6 +196,11 @@ void get_neighbour(V_INT perm)
 	perm[i1] = perm[i1] ^ perm[i2];
 	perm[i2] = perm[i1] ^ perm[i2];
 	perm[i1] = perm[i1] ^ perm[i2];
+}
+
+inline double probability(int prev, int curr, int temp)
+{
+	return 1.0 - exp(double(curr - prev) / (K*temp));
 }
 
 V_V_INT64 random_job_shop(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_INT& proc_times, time_t start_stamp, int time_limit, int64_t& best_time, int max_tasks)
