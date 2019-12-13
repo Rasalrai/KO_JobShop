@@ -158,6 +158,8 @@ V_V_INT64 better_job_shop(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_I
 				p_best_times = p_times;
 				p_times = p_temp;
 			}
+			if (get_temp(start_stamp, time_limit)<=0)
+                return *p_best_times;
 			// always use the new option
 			prev_order = job_order;
 		}
@@ -166,12 +168,12 @@ V_V_INT64 better_job_shop(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_I
 		{
 			temperature = get_temp(start_stamp, time_limit);
 			if (temperature <= 0) return *p_best_times;
-			if (probability(prev_time, curr_time, temperature) > (double(std::rand()-1) / RAND_MAX))
+			if (probability(prev_time, curr_time, temperature) <= (double(std::rand()-1) / RAND_MAX))
 			{
 				// stay with previous permutation
-				job_order = prev_order;
+                prev_order = job_order;
 			}
-			else prev_order = job_order;
+			else job_order = prev_order;
 		}
 		
 		// get new permutation
@@ -185,7 +187,7 @@ V_V_INT64 better_job_shop(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_I
 void get_neighbour(V_INT &perm)
 {
 	// choose two different indices
-	int i1 = rand() % (perm.size()), i2 = -1;
+	int i1 = rand() % (perm.size()), i2;
 	do
 	{
 		i2 = rand() % (perm.size());
