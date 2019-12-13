@@ -166,7 +166,7 @@ V_V_INT64 better_job_shop(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_I
 		{
 			temperature = get_temp(start_stamp, time_limit);
 			if (temperature <= 0) return *p_best_times;
-			if (probability(prev_time, curr_time, temperature) > ((std::rand()-1) / RAND_MAX))
+			if (probability(prev_time, curr_time, temperature) > (double(std::rand()-1) / RAND_MAX))
 			{
 				// stay with previous permutation
 				job_order = prev_order;
