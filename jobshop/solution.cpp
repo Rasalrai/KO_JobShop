@@ -1,9 +1,7 @@
 #include <ctime>
 #include <vector>
-#include <iostream>
-#include <algorithm>
-#include <cstdint>
 #include <cstdlib>
+#include <cmath>
 
 #include "solution.h"
 
@@ -168,7 +166,7 @@ V_V_INT64 better_job_shop(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_I
 		{
 			temperature = get_temp(start_stamp, time_limit);
 			if (temperature <= 0) return *p_best_times;
-			if (probability(prev_time, curr_time, temperature) > (std::rand() / (RAND_MAX + 1)))
+			if (probability(prev_time, curr_time, temperature) > ((std::rand()-1) / RAND_MAX))
 			{
 				// stay with previous permutation
 				job_order = prev_order;
@@ -194,55 +192,9 @@ void get_neighbour(V_INT &perm)
 	} while (i1 == i2);
 
 	// swap contents of chosen indices
-	perm[i1] = perm[i1] ^ perm[i2];
-	perm[i2] = perm[i1] ^ perm[i2];
-	perm[i1] = perm[i1] ^ perm[i2];
+	perm[i1] ^= perm[i2];
+	perm[i2] ^= perm[i1];
+	perm[i1] ^= perm[i2];
 }
 
-inline double probability(int prev, int curr, int temp) { return exp(double(prev - curr) / (K*temp)); }
-
-V_V_INT64 random_job_shop(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_INT& proc_times, time_t start_stamp, int time_limit, int64_t& best_time, int max_tasks)
-{
-	// storing iterations' data
-	V_V_INT64 machines_usage(machines_c);
-	for (int i = 0; i < machines_c; ++i)
-	{
-		machines_usage[i].reserve(jobs_c * 2);
-		machines_usage[i].push_back(0);
-	}
-
-	V_V_INT64 start_times(jobs_c);
-	V_V_INT64 best_start_times(jobs_c);
-	V_INT job_order(jobs_c);
-	for (int i = 0; i < jobs_c; ++i)
-	{
-		start_times[i].resize(max_tasks);
-		best_start_times[i].resize(max_tasks);
-		job_order[i] = i;
-	}
-
-	V_V_INT64* p_times = &start_times, *p_best_times = &best_start_times, *p_temp;
-	int64_t curr_time;
-
-	do
-	{
-		curr_time = fit_jobs(machines_c, jobs_c, proc_order, proc_times, *p_times, machines_usage, job_order, max_tasks);
-		for (int j = 0; j < machines_c; ++j)
-		{
-			machines_usage[j].erase(machines_usage[j].begin() + 1, machines_usage[j].end());
-			machines_usage[j][0] = 0;
-		}
-
-		// compare with previous best
-		if (curr_time < best_time)
-		{
-			best_time = curr_time;
-
-			p_temp = p_best_times;
-			p_best_times = p_times;
-			p_times = p_temp;
-		}
-		std::random_shuffle(job_order.begin(), job_order.end());
-	} while (!time_passed(start_stamp, time_limit));
-	return *p_best_times;
-}
+inline double probability(int prev, int curr, double temp) { return exp(double(prev - curr) / (K*temp)); }

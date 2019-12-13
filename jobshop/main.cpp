@@ -1,9 +1,9 @@
 #include <cstdlib>
 #include <iostream>
-#include <cstdio>
 #include <string>
 #include <ctime>
 #include <cstdint>
+
 #include "input_output.h"
 #include "solution.h"
 
