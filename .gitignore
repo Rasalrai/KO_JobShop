@@ -4,6 +4,7 @@ jobshop/.vs/*
 .*
 !.gitignore
 *.txt
+!CMakeLists.txt
 
 # Prerequisites
 *.d
