@@ -30,7 +30,6 @@ int main(int argc, char *argv[])
 	std::vector< std::vector<int64_t> > start_times;
 
 	int MACHINES_COUNT, JOBS_COUNT, MAX_TSK = 0, TIME_LIMIT = 300;
-
 	std::string result_file = "wynik.txt";
 
 	std::string input_file = argv[1];

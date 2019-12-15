@@ -77,7 +77,7 @@ void read_t(std::string& filename, int& machines_c, int& jobs_c, std::vector< st
 	}
 }
 
-void write_to_file(std::string& filename, int machines_c, int jobs_c, int64_t end_time, std::vector< std::vector<int64_t> > times, int max_tasks)
+void write_to_file(std::string& filename, int& machines_c, int& jobs_c, int64_t& end_time, std::vector< std::vector<int64_t> >& times, int& max_tasks)
 {
 	/*
 	Rozwiazanie podac w postaci: dlugosc uszeregowania \n
