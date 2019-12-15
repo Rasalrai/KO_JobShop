@@ -10,19 +10,13 @@
 #define V_INT64 std::vector<int64_t>
 #define V_V_INT std::vector< std::vector<int> >
 #define V_V_INT64 std::vector< std::vector<int64_t> >
-const double K = 0.5;
+const double K = 50;
 
-
-inline bool time_passed(time_t& start, int& limit)
-{
-	/* true if _limit_ minutes passed since beginning of execution of the program */
-    return (time(nullptr) >= (start + limit));
-}
 
 inline double get_temp(time_t& start, int& limit)
 {
 	// used for temperature
-	return (100.0 * (start + limit - time(nullptr)) / limit);
+	return (100000.0 * (start + limit - time(nullptr)) / limit);
 }
 
 int64_t fit_jobs(int& machines_c, int& jobs_c, V_V_INT& proc_order, V_V_INT& proc_times, V_V_INT64& start_times, V_V_INT64& machines_usage, V_INT& job_order, int& max_tasks)
@@ -181,7 +175,6 @@ V_V_INT64 better_job_shop(int machines_c, int jobs_c, V_V_INT& proc_order, V_V_I
 		prev_time = curr_time;
     }
 	while (1);
-	// return *p_best_times;
 }
 
 void get_neighbour(V_INT &perm)
