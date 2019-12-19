@@ -6,6 +6,8 @@
 `g++ jobshop/main.cpp jobshop/input_output.cpp jobshop/solution.cpp -o jobshop.out`
 
 `./jobshop.out test_file instance_type exec_time max_tasks result_file`
+
+### Run parameters
 `test_file` - path to file with test instance
 
 `instance_type` (`b` or `t`) - Beasley's or Tailard's instance format
