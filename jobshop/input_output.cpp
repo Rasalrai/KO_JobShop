@@ -4,7 +4,7 @@
 #include <cstdint>
 #include "input_output.h"
 
-void read_b(std::string filename, int& machines_c, int& jobs_c, std::vector< std::vector<int> >& machines, std::vector< std::vector<int> >& times)
+void read_b(std::string& filename, int& machines_c, int& jobs_c, std::vector< std::vector<int> >& machines, std::vector< std::vector<int> >& times)
 {
 	std::ifstream odczyt;
 	std::string line;
@@ -33,7 +33,7 @@ void read_b(std::string filename, int& machines_c, int& jobs_c, std::vector< std
 	}
 }
 
-void read_t(std::string filename, int& machines_c, int& jobs_c, std::vector< std::vector<int> >& machines, std::vector< std::vector<int> >& times)
+void read_t(std::string& filename, int& machines_c, int& jobs_c, std::vector< std::vector<int> >& machines, std::vector< std::vector<int> >& times)
 {
 	int x;
 	std::ifstream odczyt;
@@ -65,6 +65,7 @@ void read_t(std::string filename, int& machines_c, int& jobs_c, std::vector< std
 		std::getline(odczyt, line); odczyt.ignore();
 
 		// read machines
+		// uncomment the line below for *nix, comment for Windows
 		std::getline(odczyt, line); odczyt.ignore();
 		for (int i = 0; i < jobs_c; ++i)
 			for (int j = 0; j < machines_c; ++j)
@@ -76,7 +77,7 @@ void read_t(std::string filename, int& machines_c, int& jobs_c, std::vector< std
 	}
 }
 
-void write_to_file(std::string filename, int machines_c, int jobs_c, int64_t end_time, std::vector< std::vector<int64_t> > times, int max_tasks)
+void write_to_file(std::string& filename, int& machines_c, int& jobs_c, int64_t& end_time, std::vector< std::vector<int64_t> >& times, int& max_tasks)
 {
 	/*
 	Rozwiazanie podac w postaci: dlugosc uszeregowania \n
